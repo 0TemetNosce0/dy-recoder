@@ -4,3 +4,4 @@ DXGICapture::DXGICapture()
 {
 
 }
+

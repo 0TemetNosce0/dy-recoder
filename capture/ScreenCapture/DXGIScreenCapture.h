@@ -1,4 +1,3 @@
-// PHZ
 // 2020-11-20
 
 #ifndef DXGI_SCREEN_CAPTURE_H
@@ -42,11 +41,13 @@ public:
 		return is_started_;
 	}
 
+    bool CaptureImage(std::string pathname);//保存為圖片
+    int AquireFrame();
 private:
 	int StartCapture();
 	int StopCapture();
 	int CreateSharedTexture();
-	int AquireFrame();
+
 
 	DX::Monitor monitor_;
 
@@ -66,7 +67,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context_;
 	Microsoft::WRL::ComPtr<IDXGIOutputDuplication> dxgi_output_duplication_;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture_;
-	Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;//表示键控互斥，它允许独占访问由多个设备使用的共享资源
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> rgba_texture_;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> gdi_texture_;
 };

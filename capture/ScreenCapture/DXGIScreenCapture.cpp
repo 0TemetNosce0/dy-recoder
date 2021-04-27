@@ -3,8 +3,8 @@
 #endif
 
 #include "DXGIScreenCapture.h"
-#include <fstream> 
-
+#include <fstream>
+#include <QImage>
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
 
@@ -94,7 +94,7 @@ bool DXGIScreenCapture::Init(int display_index)
 
 	hr = dxgiOutput1->DuplicateOutput(d3d11_device_.Get(), dxgi_output_duplication_.GetAddressOf());
 	if (FAILED(hr)) {
-		/* 0x887a0004: NVIDIA控制面板-->全局设置--首选图形处理器(自动选择) */
+		/* 0x887a0004: NVIDIA鎺у埗闈㈡澘-->鍏ㄥ眬璁剧疆--棣栭�夊浘褰㈠鐞嗗櫒(鑷姩閫夋嫨) */
 		printf("[DXGIScreenCapture] Failed to get duplicate output.\n");
 		Destroy();
 		return false;
@@ -269,30 +269,35 @@ int DXGIScreenCapture::AquireFrame()
 	image_size_ = dxgi_desc_.ModeDesc.Width * dxgi_desc_.ModeDesc.Height * 4;
 
 	D3D11_MAPPED_SUBRESOURCE dsec = { 0 };
-	d3d11_context_->CopyResource(gdi_texture_.Get(), outputTexture.Get());
+    d3d11_context_->CopyResource(gdi_texture_.Get(), outputTexture.Get());//鎷疯礉
 	
-	Microsoft::WRL::ComPtr<IDXGISurface1> surface1;
-	hr = gdi_texture_->QueryInterface(__uuidof(IDXGISurface1), reinterpret_cast<void **>(surface1.GetAddressOf()));
+    Microsoft::WRL::ComPtr<IDXGISurface1> surface1;//DXGI Surface
+    hr = gdi_texture_->QueryInterface(__uuidof(IDXGISurface1), reinterpret_cast<void **>(surface1.GetAddressOf()));//
 	if (FAILED(hr)) {
 		return -1;
 	}
 
-	CURSORINFO cursorInfo = { 0 };
+
+
+
+    CURSORINFO cursorInfo = { 0 };//榧犳爣
 	cursorInfo.cbSize = sizeof(CURSORINFO);
 	if (GetCursorInfo(&cursorInfo) == TRUE) {
 		if (cursorInfo.flags == CURSOR_SHOWING) {
 			auto cursorPosition = cursorInfo.ptScreenPos;
 			auto lCursorSize = cursorInfo.cbSize;
 			HDC  hdc;
-			surface1->GetDC(FALSE, &hdc);
+            surface1->GetDC(FALSE, &hdc);//鑾峰彇dc
 			DrawIconEx(hdc, cursorPosition.x - monitor_.left, cursorPosition.y - monitor_.top, 
-				cursorInfo.hCursor, 0, 0, 0, 0, DI_NORMAL | DI_DEFAULTSIZE);
+                cursorInfo.hCursor, 0, 0, 0, 0, DI_NORMAL | DI_DEFAULTSIZE);//缁樺埗
 			surface1->ReleaseDC(nullptr);
 		}
 	}
 
+
+
 	d3d11_context_->CopyResource(rgba_texture_.Get(), gdi_texture_.Get());
-	hr = d3d11_context_->Map(rgba_texture_.Get(), 0, D3D11_MAP_READ, 0, &dsec);
+    hr = d3d11_context_->Map(rgba_texture_.Get(), 0, D3D11_MAP_READ, 0, &dsec);//
 	if (!FAILED(hr)) {
 		if (dsec.pData != NULL) {
 			uint32_t image_width = GetWidth();
@@ -302,6 +307,9 @@ int DXGIScreenCapture::AquireFrame()
 			for (uint32_t y = 0; y < image_height; y++) {
 				memcpy(image_ptr_.get() + y * image_width * 4, (uint8_t*)dsec.pData + y * dsec.RowPitch, image_width * 4);
 			}
+
+//            QImage img( (uint8_t*)dsec.pData,image_width,image_height,QImage::Format_RGBA8888);
+//            img.save("d:/test1.png");
 		}
 		d3d11_context_->Unmap(rgba_texture_.Get(), 0);
 	}
@@ -350,58 +358,62 @@ bool DXGIScreenCapture::CaptureFrame(std::vector<uint8_t>& bgra_image, uint32_t&
 //	unlock_key = 0;
 //	return true;
 //}
+#include <QImage>
+#include <QImage>
+#include <QImage>
+bool DXGIScreenCapture::CaptureImage(std::string pathname)
+{
+    std::lock_guard<std::mutex> locker(mutex_);
 
-//bool DXGIScreenCapture::CaptureImage(std::string pathname)
-//{
-//	std::lock_guard<std::mutex> locker(mutex_);
-//
-//	if (!is_started_) {
-//		return false;
-//	}
-//
-//	if (image_ptr_ == nullptr || image_size_ == 0) {
-//		return false;
-//	}
-//	
-//	std::ofstream fpOut(pathname.c_str(), std::ios::out | std::ios::binary);
-//	if (!fpOut) {
-//		printf("[DXGIScreenCapture] capture image failed, open %s failed.\n", pathname.c_str());
-//		return false;
-//	}
-//
-//	unsigned char fileHeader[54] = {  
-//		0x42, 0x4d, 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0,  /*file header*/
-//		40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 32, 0, /*info header*/
-//		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0
-//	};
-//
-//	uint32_t imageWidth  = dxgi_desc_.ModeDesc.Width;
-//	uint32_t imageHeight = dxgi_desc_.ModeDesc.Height;
-//	uint32_t imageSize  = image_size_;
-//	uint32_t fileSize = sizeof(fileHeader) + imageSize;
-//
-//	fileHeader[2] = (uint8_t)fileSize;
-//	fileHeader[3] = fileSize >> 8;
-//	fileHeader[4] = fileSize >> 16;
-//	fileHeader[5] = fileSize >> 24;
-//
-//	fileHeader[18] = (uint8_t)imageWidth;
-//	fileHeader[19] = imageWidth >> 8;
-//	fileHeader[20] = imageWidth >> 16;
-//	fileHeader[21] = imageWidth >> 24;
-//
-//	fileHeader[22] = (uint8_t)imageHeight;
-//	fileHeader[23] = imageHeight >> 8;
-//	fileHeader[24] = imageHeight >> 16;
-//	fileHeader[25] = imageHeight >> 24;
-//
-//	fpOut.write((char*)fileHeader, 54);
-//
-//	char *imageData = (char *)image_ptr_.get();
-//	for (int h = imageHeight-1; h >= 0; h--) {
-//		fpOut.write(imageData+h*imageWidth*4, imageWidth *4);
-//	}
-//
-//	fpOut.close();
-//	return true;
-//}
+    if (!is_started_) {
+        return false;
+    }
+
+    if (image_ptr_ == nullptr || image_size_ == 0) {
+        return false;
+    }
+
+    std::ofstream fpOut(pathname.c_str(), std::ios::out | std::ios::binary);
+    if (!fpOut) {
+        printf("[DXGIScreenCapture] capture image failed, open %s failed.\n", pathname.c_str());
+        return false;
+    }
+
+    unsigned char fileHeader[54] = {
+        0x42, 0x4d, 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0,  /*file header*/
+        40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 32, 0, /*info header*/
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0
+    };
+
+    uint32_t imageWidth  = dxgi_desc_.ModeDesc.Width;
+    uint32_t imageHeight = dxgi_desc_.ModeDesc.Height;
+    uint32_t imageSize  = image_size_;
+    uint32_t fileSize = sizeof(fileHeader) + imageSize;
+
+    fileHeader[2] = (uint8_t)fileSize;
+    fileHeader[3] = fileSize >> 8;
+    fileHeader[4] = fileSize >> 16;
+    fileHeader[5] = fileSize >> 24;
+
+    fileHeader[18] = (uint8_t)imageWidth;
+    fileHeader[19] = imageWidth >> 8;
+    fileHeader[20] = imageWidth >> 16;
+    fileHeader[21] = imageWidth >> 24;
+
+    fileHeader[22] = (uint8_t)imageHeight;
+    fileHeader[23] = imageHeight >> 8;
+    fileHeader[24] = imageHeight >> 16;
+    fileHeader[25] = imageHeight >> 24;
+
+    fpOut.write((char*)fileHeader, 54);
+
+    char *imageData = (char *)image_ptr_.get();
+    for (int h = imageHeight-1; h >= 0; h--) {
+        fpOut.write(imageData+h*imageWidth*4, imageWidth *4);
+    }
+
+    fpOut.close();
+
+//  QImage img(frame.data()->buffer,w,h,QImage::Format_RGBA8888);
+    return true;
+}
