@@ -12,6 +12,9 @@ SOURCES += \
     GDICapture.cpp \
     RenderWidget.cpp \
     VideoRender.cpp \
+    capture/AudioCapture/AudioInputCapture.cpp \
+    capture/AudioCapture/AudioOutputCapture.cpp \
+    capture/AudioCapture/WASAPIAudioDevices.cpp \
     capture/ScreenCapture/DXGIScreenCapture.cpp \
     capture/ScreenCapture/GDIScreenCapture.cpp \
     capture/ScreenCapture/ScreenCapture.cpp \
@@ -27,6 +30,9 @@ HEADERS += \
     RenderWidget.h \
     VideoRender.h \
     Widget.h \
+    capture/AudioCapture/AudioInputCapture.h \
+    capture/AudioCapture/AudioOutputCapture.h \
+    capture/AudioCapture/WASAPIAudioDevices.h \
     capture/ScreenCapture/DXGIScreenCapture.h \
     capture/ScreenCapture/GDIScreenCapture.h \
     capture/ScreenCapture/ScreenCapture.h \
