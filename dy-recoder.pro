@@ -20,7 +20,8 @@ SOURCES += \
     capture/ScreenCapture/ScreenCapture.cpp \
     capture/ScreenCapture/WindowHelper.cpp \
     main.cpp \
-    Widget.cpp
+    Widget.cpp \
+    mux/Muxer.cpp
 
 HEADERS += \
     AudioCapture.h \
@@ -36,7 +37,8 @@ HEADERS += \
     capture/ScreenCapture/DXGIScreenCapture.h \
     capture/ScreenCapture/GDIScreenCapture.h \
     capture/ScreenCapture/ScreenCapture.h \
-    capture/ScreenCapture/WindowHelper.h
+    capture/ScreenCapture/WindowHelper.h \
+    mux/Muxer.h
 
 
 
