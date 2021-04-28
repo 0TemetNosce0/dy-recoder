@@ -1,0 +1,29 @@
+void AudioEditorRtAudio::audioMonitor(float *audioData, int chanels, int count) {
+    // TODO:bufferCanche個數，聲道
+    double peakLevel = 0.0; //最高点
+    double sum = 0.0;
+    //            int bufferChannels = buffer->getChannels();
+    //            for(int i = 0; i<bufferChannels; i++){
+
+    //            }
+
+    for (int i = 0; i < count * chanels; i = i + channels) {
+        const float value = *(audioData + i);
+        const double fracValue = double(value);
+        peakLevel = std::max(peakLevel, fracValue);
+        sum += fracValue * fracValue;
+    }
+    const int numSamples = count;
+    double rmsLevel = std::sqrt(
+        sum / numSamples); //平方根, 这里求平方平均数：Qn=√ [(a1^2+a2^2+...+an^2)/n]
+    //溢出处理
+    rmsLevel = 10 * log10(rmsLevel);
+    rmsLevel = std::max(double(0.0), rmsLevel);
+    rmsLevel = std::min(double(1.0), rmsLevel);
+    peakLevel = std::max(double(0.0), peakLevel);
+    peakLevel = std::min(double(1.0), peakLevel);
+
+    if (onAudioLevelChange) {
+        onAudioLevelChange(rmsLevel, peakLevel, numSamples);
+    }
+}
