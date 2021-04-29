@@ -12,7 +12,7 @@ class WASAPIAudioDevices
 public:
     explicit WASAPIAudioDevices();
     ~WASAPIAudioDevices();
-    bool GetWASAPIAudioDevices(QVector<AudioDeviceInfo> &devices, bool input);
+    static bool GetWASAPIAudioDevices(QVector<AudioDeviceInfo> &devices, bool input);
 };
 
 

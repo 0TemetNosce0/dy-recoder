@@ -6,42 +6,42 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1072</width>
-    <height>763</height>
+    <width>936</width>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,1">
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="btn_desktop">
         <property name="text">
-         <string>PushButton</string>
+         <string>桌面</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_webcam">
         <property name="text">
-         <string>PushButton</string>
+         <string>摄像头</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_cam_desktop">
         <property name="text">
-         <string>PushButton</string>
+         <string>桌面/摄像头</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_desktop_cam">
         <property name="text">
-         <string>PushButton</string>
+         <string>摄像头/桌面</string>
         </property>
        </widget>
       </item>
@@ -49,23 +49,63 @@
     </widget>
    </item>
    <item>
-    <widget class="RenderWidget" name="widget_2" native="true"/>
+    <widget class="RenderWidget" name="render_widget" native="true"/>
    </item>
    <item>
     <widget class="QWidget" name="widget_3" native="true">
-     <widget class="QPushButton" name="btn_rec">
-      <property name="geometry">
-       <rect>
-        <x>920</x>
-        <y>140</y>
-        <width>89</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>recoder</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QWidget" name="widget_8" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QPushButton" name="setting">
+           <property name="text">
+            <string>设置</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="area_btn">
+           <property name="text">
+            <string>区域</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_6" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QComboBox" name="input"/>
+         </item>
+         <item>
+          <widget class="QComboBox" name="output"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="meter" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="AudioMeterWidget" name="input_meter" native="true"/>
+         </item>
+         <item>
+          <widget class="AudioMeterWidget" name="output_meter" native="true"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_rec">
+        <property name="text">
+         <string>recoder</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -75,6 +115,12 @@
    <class>RenderWidget</class>
    <extends>QWidget</extends>
    <header>RenderWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AudioMeterWidget</class>
+   <extends>QWidget</extends>
+   <header>AudioMeterWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
