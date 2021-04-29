@@ -25,6 +25,7 @@ bool RecoderCore::stop() {
 }
 
 void RecoderCore::init() {
+    //电脑信息获取.
     //初始化输入设备，输出设备
 }
 

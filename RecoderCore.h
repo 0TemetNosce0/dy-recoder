@@ -2,6 +2,10 @@
 #include <AudioCapture/AudioInputCapture.h>
 #include <AudioCapture/WASAPIAudioDevices.h>
 #include <string>
+
+//内置参数设置
+//QJson 配置文件
+//日志文件
 class RecoderCore {
 public:
     RecoderCore();
