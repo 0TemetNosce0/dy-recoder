@@ -7,6 +7,9 @@ CONFIG += c++11
 
 SOURCES += \
     AudioCapture.cpp \
+    AudioCapture/AudioInputCapture.cpp \
+    AudioCapture/AudioOutputCapture.cpp \
+    AudioCapture/WASAPIAudioDevices.cpp \
     AudioRender.cpp \
     DXGICapture.cpp \
     GDICapture.cpp \
@@ -25,6 +28,9 @@ SOURCES += \
 
 HEADERS += \
     AudioCapture.h \
+    AudioCapture/AudioInputCapture.h \
+    AudioCapture/AudioOutputCapture.h \
+    AudioCapture/WASAPIAudioDevices.h \
     AudioRender.h \
     DXGICapture.h \
     GDICapture.h \
