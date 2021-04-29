@@ -10,9 +10,11 @@ SOURCES += \
     AudioCapture/AudioInputCapture.cpp \
     AudioCapture/AudioOutputCapture.cpp \
     AudioCapture/WASAPIAudioDevices.cpp \
+    AudioMeterWidget.cpp \
     AudioRender.cpp \
     DXGICapture.cpp \
     GDICapture.cpp \
+    RecoderCore.cpp \
     RenderWidget.cpp \
     VideoRender.cpp \
     capture/AudioCapture/AudioInputCapture.cpp \
@@ -28,12 +30,21 @@ SOURCES += \
 
 HEADERS += \
     AudioCapture.h \
+<<<<<<< .mine
     AudioCapture/AudioInputCapture.h \
     AudioCapture/AudioOutputCapture.h \
     AudioCapture/WASAPIAudioDevices.h \
+
+=======
+    AudioCapture/AudioInputCapture.h \
+    AudioCapture/AudioOutputCapture.h \
+    AudioCapture/WASAPIAudioDevices.h \
+    AudioMeterWidget.h \
+>>>>>>> .theirs
     AudioRender.h \
     DXGICapture.h \
     GDICapture.h \
+    RecoderCore.h \
     RenderWidget.h \
     VideoRender.h \
     Widget.h \
@@ -44,7 +55,8 @@ HEADERS += \
     capture/ScreenCapture/GDIScreenCapture.h \
     capture/ScreenCapture/ScreenCapture.h \
     capture/ScreenCapture/WindowHelper.h \
-    mux/Muxer.h
+    mux/Muxer.h \
+    util/SafeQueue.h
 
 
 
