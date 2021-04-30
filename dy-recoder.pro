@@ -30,7 +30,8 @@ SOURCES += \
 
 HEADERS += \
     AudioCapture.h \
-<<<<<<< .mine
+<<<<<<< .mine \
+    util/SafeQueue.h
     AudioCapture/AudioInputCapture.h \
     AudioCapture/AudioOutputCapture.h \
     AudioCapture/WASAPIAudioDevices.h \
