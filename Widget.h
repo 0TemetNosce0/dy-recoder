@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <QComboBox>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
