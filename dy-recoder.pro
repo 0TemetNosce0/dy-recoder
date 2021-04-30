@@ -30,10 +30,18 @@ SOURCES += \
 
 HEADERS += \
     AudioCapture.h \
+<<<<<<< .mine \
+    util/SafeQueue.h
+    AudioCapture/AudioInputCapture.h \
+    AudioCapture/AudioOutputCapture.h \
+    AudioCapture/WASAPIAudioDevices.h \
+
+=======
     AudioCapture/AudioInputCapture.h \
     AudioCapture/AudioOutputCapture.h \
     AudioCapture/WASAPIAudioDevices.h \
     AudioMeterWidget.h \
+>>>>>>> .theirs
     AudioRender.h \
     DXGICapture.h \
     GDICapture.h \
