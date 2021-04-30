@@ -1,13 +1,12 @@
-#pragma once
-#include <windows.h>
+﻿#pragma once
 #include <AudioCapture/WASAPIAudioDevices.h>
-#include <mmdeviceapi.h>
 #include <audioclient.h>
-#include <wrl/client.h>
+#include <mmdeviceapi.h>
 #include <thread>
+#include <windows.h>
+#include <wrl/client.h>
 using namespace Microsoft::WRL;
-class AudioInputCapture
-{
+class AudioInputCapture {
 public:
     AudioInputCapture();
 
@@ -19,16 +18,15 @@ public:
     bool Initialize();
 
     void changeDevice(std::string deviceId);
-private:
 
+private:
     void captureThread();
     ComPtr<IMMDevice> device;
     ComPtr<IAudioClient> client;
     ComPtr<IAudioCaptureClient> capture;
     ComPtr<IMMDeviceEnumerator> enumerator;
-    WinHandle stopSignal;
-    WinHandle receiveSignal;
+    HANDLE stopSignal;
+    HANDLE receiveSignal;
     std::thread captureThr;
     bool processCaptureData();
 };
-

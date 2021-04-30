@@ -1,4 +1,4 @@
-#include "AudioInputCapture.h"
+﻿#include "AudioInputCapture.h"
 #include <QDebug>
 AudioInputCapture::AudioInputCapture()
 {
@@ -92,6 +92,7 @@ bool AudioInputCapture::Initialize()
     std::unique_ptr<WAVEFORMATEX> wfex;
     DWORD flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
     //初始化IAudioClient
+    client.Reset();
     res = device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
                            (void **)client.GetAddressOf());
     if (FAILED(res)){
@@ -100,8 +101,8 @@ bool AudioInputCapture::Initialize()
 
     }
 
-
-    res = client->GetMixFormat(&wfex);
+    WAVEFORMATEX * wfexPtr = wfex.get();
+    res = client->GetMixFormat(&(wfexPtr));
     if (FAILED(res)){
         //        throw HRError("Failed to get mix format", res);
         return false;
