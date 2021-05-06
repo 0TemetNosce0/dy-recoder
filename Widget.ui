@@ -58,9 +58,16 @@
        <widget class="QWidget" name="widget_8" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QPushButton" name="setting">
+          <widget class="QPushButton" name="screen0">
            <property name="text">
-            <string>设置</string>
+            <string>显示器0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="screen1">
+           <property name="text">
+            <string>显示器1</string>
            </property>
           </widget>
          </item>
@@ -99,10 +106,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_rec">
-        <property name="text">
-         <string>recoder</string>
-        </property>
+       <widget class="QWidget" name="widget_2" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QPushButton" name="setting">
+           <property name="text">
+            <string>设置</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_rec">
+           <property name="text">
+            <string>recoder</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

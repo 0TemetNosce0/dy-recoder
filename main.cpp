@@ -1,8 +1,7 @@
 #include "Widget.h"
 
 #include <QApplication>
-#include "capture/ScreenCapture/WindowHelper.h"
-#include <capture/ScreenCapture/DXGIScreenCapture.h>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -12,13 +11,13 @@ int main(int argc, char *argv[])
 
     //test
 
-    std::vector<DX::Monitor> monitors =  DX::GetMonitors();
-    auto DXGIMonitors = DX::EnumerateAdapters();
+//    std::vector<DX::Monitor> monitors =  DX::GetMonitors();
+//    auto DXGIMonitors = DX::EnumerateAdapters();
 
-    DXGIScreenCapture capture;
-    capture.Init(1);
-        capture.AquireFrame();
-        capture.CaptureImage("d:/test.png");
+//    DXGIScreenCapture capture;
+//    capture.Init(1);
+//        capture.AquireFrame();
+//        capture.CaptureImage("d:/test.png");
     return a.exec();
 
 }

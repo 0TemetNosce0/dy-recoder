@@ -6,42 +6,39 @@ CONFIG += c++11
 
 
 SOURCES += \
-    AudioCapture.cpp \
-    AudioCapture/AudioInputCapture.cpp \
-    AudioCapture/AudioOutputCapture.cpp \
+    AudioCapture/AudioCapture.cpp \
+    AudioCapture/AudioResampler.cpp \
     AudioCapture/WASAPIAudioDevices.cpp \
     AudioMeterWidget.cpp \
+    AudioOutputPortAudio.cpp \
     AudioRender.cpp \
     DXGICapture.cpp \
+    EncodeAACTest.cpp \
     GDICapture.cpp \
     RecoderCore.cpp \
     RenderWidget.cpp \
     VideoRender.cpp \
-    capture/AudioCapture/AudioInputCapture.cpp \
-    capture/AudioCapture/AudioOutputCapture.cpp \
-    capture/AudioCapture/WASAPIAudioDevices.cpp \
-    capture/ScreenCapture/DXGIScreenCapture.cpp \
-    capture/ScreenCapture/GDIScreenCapture.cpp \
-    capture/ScreenCapture/ScreenCapture.cpp \
-    capture/ScreenCapture/WindowHelper.cpp \
+    encoder/FFmpegAudioEncoder.cpp \
+    encoder/FFmpegMux.cpp \
     main.cpp \
     Widget.cpp \
-    mux/Muxer.cpp
+    util/CircleBuffer.cpp \
+    util/blog.cpp \
+    util/test.cpp
 
 HEADERS += \
-    AudioCapture.h \
-<<<<<<< .mine \
-    util/SafeQueue.h
-    AudioCapture/AudioInputCapture.h \
-    AudioCapture/AudioOutputCapture.h \
+    AudioCapture/AudioCapture.h \
+    AudioCapture/AudioCapture.h \
+    AudioCapture/AudioResampler.h \
+    AudioOutputPortAudio.h \
+    EncodeAACTest.h \
+    encoder/FFmpegAudioEncoder.h \
+    encoder/FFmpegMux.h \
+    util/CircleBuffer.h \
+    util/SafeQueue.h \
     AudioCapture/WASAPIAudioDevices.h \
-
-=======
-    AudioCapture/AudioInputCapture.h \
-    AudioCapture/AudioOutputCapture.h \
     AudioCapture/WASAPIAudioDevices.h \
     AudioMeterWidget.h \
->>>>>>> .theirs
     AudioRender.h \
     DXGICapture.h \
     GDICapture.h \
@@ -49,15 +46,8 @@ HEADERS += \
     RenderWidget.h \
     VideoRender.h \
     Widget.h \
-    capture/AudioCapture/AudioInputCapture.h \
-    capture/AudioCapture/AudioOutputCapture.h \
-    capture/AudioCapture/WASAPIAudioDevices.h \
-    capture/ScreenCapture/DXGIScreenCapture.h \
-    capture/ScreenCapture/GDIScreenCapture.h \
-    capture/ScreenCapture/ScreenCapture.h \
-    capture/ScreenCapture/WindowHelper.h \
-    mux/Muxer.h \
-    util/SafeQueue.h
+    util/blog.h \
+    util/test.h
 
 
 
@@ -87,4 +77,62 @@ LIBS  += $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avcodec.lib  \
 
 INCLUDEPATH += $$PWD/3rd/ffmpeg-4.0.2-win32/include
 
-LIBS += -lshell32 -luser32 -lD3d9
+LIBS += -lshell32 -luser32 -lD3d9 -lole32
+
+
+#DEFINES +=  -D__STDC_CONSTANT_MACROS
+
+
+HEADERS += \
+    AudioCapture/AudioCapture.h \
+    AudioCapture/AudioResampler.h \
+    util/SafeQueue.h \
+    AudioCapture/WASAPIAudioDevices.h \
+    AudioCapture/WASAPIAudioDevices.h \
+    AudioMeterWidget.h \
+    AudioRender.h \
+    DXGICapture.h \
+    GDICapture.h \
+    RecoderCore.h \
+    RenderWidget.h \
+    VideoRender.h \
+    Widget.h \
+    util/blog.h
+
+
+
+FORMS += \
+    Widget.ui
+
+
+LIBS  += $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avcodec.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avdevice.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avfilter.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avformat.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avutil.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/postproc.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/swresample.lib  \
+            $$PWD/3rd/ffmpeg-4.0.2-win32/lib/swscale.lib
+
+#LIBS  +=  \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/swresample-3.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/swscale-5.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/avcodec-58.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/avdevice-58.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/avfilter-7.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/avformat-58.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/avutil-56.dll \
+#        $$PWD/3rd/ffmpeg-4.0.2-win32/bin/postproc-55.dll \
+
+
+INCLUDEPATH += $$PWD/3rd/ffmpeg-4.0.2-win32/include
+
+LIBS += -lshell32 -luser32 -lD3d9 -lole32
+
+LIBS += $$PWD/3rd/portaudio/lib/portaudio_x86.lib
+
+
+
+INCLUDEPATH += $$PWD/3rd/portaudio/include
+
+#DEFINES +=  -D__STDC_CONSTANT_MACROS

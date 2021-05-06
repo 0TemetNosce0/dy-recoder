@@ -1,7 +1,8 @@
 ﻿#pragma once
-#include <AudioCapture/AudioInputCapture.h>
+#include <AudioCapture/AudioCapture.h>
 #include <AudioCapture/WASAPIAudioDevices.h>
-#include <string>
+#include <EncodeAACTest.h>
+#include "AudioOutputPortAudio.h"
 
 //内置参数设置
 //QJson 配置文件
@@ -15,7 +16,9 @@ public:
 
     bool saveSetting();
     //获取输入输出设备info
-    QVector<AudioDeviceInfo> GetWASAPIAudioDevices();
+    QVector<AudioDeviceInfo> GetWASAPIAudioInputDevices();
+    QVector<AudioDeviceInfo> GetWASAPIAudioOutputDevices();
+
     //录制桌面
 
     //录制摄像头
@@ -40,6 +43,16 @@ public:
     bool stop();
     //输入输出meter
 
+    void changeAudioInputDevice(QString deviceId);
+      void changeAudioOutputDevice(QString deviceId);
 private:
-    AudioInputCapture *audioInputCapture = nullptr;
+    std::unique_ptr<AudioCapture> audioInputCapture = nullptr;
+    std::unique_ptr<AudioCapture> audioOutCapture = nullptr;
+
+//    audioBuffer;
+    //test
+
+
+    EncodeAACTest encoderTest;
+    AudioOutputPortAudio audioPlay;
 };
