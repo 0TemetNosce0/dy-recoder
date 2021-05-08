@@ -1,19 +1,13 @@
-#include "EncodeAACTest.h"
+﻿#include "EncodeAACTest.h"
 #include <QDebug>
-EncodeAACTest::EncodeAACTest()
-{
-
-
+EncodeAACTest::EncodeAACTest() {
     //    samples[0] = new [1024*4]int;
     //    samples[0] = new int[1024*4];
 }
 
-
-int EncodeAACTest::init_avformat()
-{
-    const char* out_file = "d:/tdjm.aac";          //Output URL
+int EncodeAACTest::init_avformat() {
+    const char *out_file = "d:/tdjm.aac"; //Output URL
     //    int i;
-
 
     //    av_register_all();
 
@@ -22,23 +16,22 @@ int EncodeAACTest::init_avformat()
     fmt = av_guess_format(NULL, out_file, NULL);
     pFormatCtx->oformat = fmt;
 
-
     //    //Method 2.
     //    //avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
     //    //fmt = pFormatCtx->oformat;
 
     //Open output URL
-    if (avio_open(&pFormatCtx->pb,out_file, AVIO_FLAG_READ_WRITE) < 0){
+    if (avio_open(&pFormatCtx->pb, out_file, AVIO_FLAG_READ_WRITE) < 0) {
         printf("Failed to open output file!\n");
         return -1;
     }
 
     audio_st = avformat_new_stream(pFormatCtx, 0);
-    if (audio_st==NULL){
+    if (audio_st == NULL) {
         return -1;
     }
     pCodec = avcodec_find_encoder(fmt->audio_codec);
-    if (!pCodec){
+    if (!pCodec) {
         printf("Can not find encoder!\n");
         return -1;
     }
@@ -51,12 +44,12 @@ int EncodeAACTest::init_avformat()
 //    2、很可能你传入的PCM数据是AV_SAMPLE_FMT_S16的，avcodec_encode_audio2还是返回-22错误，争取做法是需要AV_SAMPLE_FMT_S16的数据转为AV_SAMPLE_FMT_FLTP就可以了。下面贴一个ffmpeg4.0能编译通过执行编码的代码
 //————————————————
 
-int EncodeAACTest::init()
-{
-    enc_create();
+int EncodeAACTest::init() {
     init_avformat();
+    enc_create();
+
     //Write Header
-    avformat_write_header(pFormatCtx,NULL);
+    avformat_write_header(pFormatCtx, NULL);
     //    void encode(uint8_t *data, size_t size);
 
     //    int got_frame=0;
@@ -67,14 +60,12 @@ int EncodeAACTest::init()
     //    const char* out_file = "d:/tdjm.aac";          //Output URL
     //    int i;
 
-
     //    av_register_all();
 
     //    //Method 1.
     //    pFormatCtx = avformat_alloc_context();
     //    fmt = av_guess_format(NULL, out_file, NULL);
     //    pFormatCtx->oformat = fmt;
-
 
     //    //Method 2.
     //    //avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
@@ -110,8 +101,6 @@ int EncodeAACTest::init()
     //    //Show some information
     //    av_dump_format(pFormatCtx, 0, out_file, 1);
 
-
-
     //    //    swr = swr_alloc();
     //    //    av_opt_set_int(swr, "in_channel_layout",  AV_CH_LAYOUT_STEREO, 0);
     //    //    av_opt_set_int(swr, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
@@ -125,7 +114,6 @@ int EncodeAACTest::init()
 
     //    //    outs[0]=(uint8_t *)malloc(len);//len 为4096
     //    //    outs[1]=(uint8_t *)malloc(len);
-
 
     //    if ((ret = avcodec_open2(pCodecCtx, pCodec,NULL)) < 0){
     //        printf("Failed to open encoder!\n");
@@ -156,7 +144,6 @@ int EncodeAACTest::init()
     //    //        pFrame->data[0] =(uint8_t*)outs[0];//audioFrame 是VFrame
     //    //        pFrame->data[1] =(uint8_t*)outs[1];
 
-
     //    //        //pFrame->data[0] = frame_buf;  //PCM Data
     //    //        pFrame->pts=i*100;
     //    //        got_frame=0;
@@ -177,8 +164,7 @@ int EncodeAACTest::init()
     return false;
 }
 
-bool EncodeAACTest::initialize_codec()
-{
+bool EncodeAACTest::initialize_codec() {
     int ret;
 
     aframe = av_frame_alloc();
@@ -194,7 +180,7 @@ bool EncodeAACTest::initialize_codec()
         //                    av_err2str(ret));
         //        obs_encoder_set_last_error(enc->encoder, error_message.array);
         //        dstr_free(&error_message);
-//        qDebug("Failed to open AAC codec: %s", av_err2str(ret));
+        //        qDebug("Failed to open AAC codec: %s", av_err2str(ret));
         return false;
     }
     aframe->format = context->sample_fmt;
@@ -206,46 +192,37 @@ bool EncodeAACTest::initialize_codec()
     if (!frame_size)
         frame_size = 1024;
 
-    frame_size_bytes = frame_size * (int)audio_size;
+    frame_size_bytes = frame_size * (int) audio_size;
 
-    ret = av_samples_alloc(samples, NULL, context->channels,
-                           frame_size, context->sample_fmt, 0);
+    ret = av_samples_alloc(samples, NULL, context->channels, frame_size, context->sample_fmt, 0);
     if (ret < 0) {
-//        qDebug("Failed to create audio buffer: %s", av_err2str(ret));
+        //        qDebug("Failed to create audio buffer: %s", av_err2str(ret));
         return false;
     }
 
     return true;
 }
 
-void EncodeAACTest::encode(uint8_t * data,size_t size)
-{
-
-    int newSize = size+packet_buffer.size();
-    if(packet_buffer.capacity()<newSize){
-
+void EncodeAACTest::encode(uint8_t *data, size_t size) {
+    int newSize = size + packet_buffer.size();
+    if (packet_buffer.capacity() < newSize) {
         packet_buffer.resize(newSize);
     }
 
-    memcpy(packet_buffer.data()+packet_bufferSize+packet_bufferStartPos,data,size);
+    memcpy(packet_buffer.data() + packet_bufferSize + packet_bufferStartPos, data, size);
 
     packet_bufferSize += size;
-    while(packet_bufferSize/2/4>1024){//编码
+    while (packet_bufferSize / 2 / 4 > 1024) { //编码
 
+        { //转为plane
 
-        {//转为plane
-
-            float * dataF = (float* )data;
-            float * samplesP=  (float* )samples[0];
-            for(int i =0 ;i<1024;i++){
-
-
-                *samplesP = *dataF;
-                dataF = dataF+2;
-                samplesP++;
-            }
-
-
+            float *dataF = (float *) data;
+            float *samplesP = (float *) samples[0];
+            //            for (int i = 0; i < 1024; i++) {
+            //                *samplesP = *dataF;
+            //                dataF = dataF + 2;
+            //                samplesP++;
+            //            }
         }
 
         //        av_new_packet(&pkt,size);
@@ -270,29 +247,29 @@ void EncodeAACTest::encode(uint8_t * data,size_t size)
         int got_packet;
         int ret;
         aframe->nb_samples = frame_size;
-        aframe->pts = av_rescale_q(
-            total_samples, time_base/*(AVRational){1, context->sample_rate}*/,
-            context->time_base);
+        aframe->pts = av_rescale_q(total_samples,
+                                   time_base /*(AVRational){1, context->sample_rate}*/,
+                                   context->time_base);
 
-        ret = avcodec_fill_audio_frame(
-            aframe, context->channels, context->sample_fmt,
-            samples[0], frame_size_bytes * context->channels,
-            1);
+        ret = avcodec_fill_audio_frame(aframe,
+                                       context->channels,
+                                       context->sample_fmt,
+                                       samples[0],
+                                       frame_size_bytes * context->channels,
+                                       1);
         if (ret < 0) {
-//            qDebug("avcodec_fill_audio_frame failed: %s", av_err2str(ret));
-            return ;
+            //            qDebug("avcodec_fill_audio_frame failed: %s", av_err2str(ret));
+            return;
         }
 
         total_samples += frame_size;
 
-        ret = avcodec_encode_audio2(context, &avpacket, aframe,
-                                    &got_packet);
+        ret = avcodec_encode_audio2(context, &avpacket, aframe, &got_packet);
 
         if (ret < 0) {
-//            qDebug("avcodec_encode_audio2 failed: %s", av_err2str(ret));
-            return ;
+            //            qDebug("avcodec_encode_audio2 failed: %s", av_err2str(ret));
+            return;
         }
-
 
         //        *received_packet = !!got_packet;
         //        if (!got_packet)
@@ -310,36 +287,67 @@ void EncodeAACTest::encode(uint8_t * data,size_t size)
         //        packet->timebase_den = (int32_t)enc->context->sample_rate;
         //        av_free_packet(&avpacket);
 
-        {//write
-            if (got_packet==1){
-                qDebug("Succeed to encode 1 frame! \tsize:%5d\n",avpacket.size);
+        { //write
+            if (got_packet == 1) {
+                qDebug("Succeed to encode 1 frame! \tsize:%5d\n", avpacket.size);
                 avpacket.stream_index = audio_st->index;
                 ret = av_write_frame(pFormatCtx, &avpacket);
                 av_free_packet(&avpacket);
             }
-
         }
 
-
-        packet_bufferStartPos -=1024*2*4;
-        packet_bufferSize-=1024*2*4;
+        packet_bufferStartPos -= 1024 * 2 * 4;
+        packet_bufferSize -= 1024 * 2 * 4;
     }
 
+    memmove(packet_buffer.data(), packet_buffer.data() + packet_bufferStartPos, packet_bufferSize);
 
-
-
-    memmove(packet_buffer.data(),packet_buffer.data()+packet_bufferStartPos,packet_bufferSize);
-
-    packet_bufferStartPos =0;
-
+    packet_bufferStartPos = 0;
 }
-
-bool EncodeAACTest::enc_create()
+static void log_callback(void *ptr, int level, const char *fmt, va_list vl)
 {
+    switch (level) {
+    case AV_LOG_QUIET:
+    case AV_LOG_PANIC:
+    case AV_LOG_FATAL:
+    case AV_LOG_ERROR:
+        //        LOG_ERROR2(fmt, vl);
+        //        break;
+            qDebug(fmt,vl);
+    case AV_LOG_WARNING:
+//        LOG_WARNING2(fmt, vl);
+    qDebug(fmt,vl);
+        break;
+    case AV_LOG_INFO:
+    case AV_LOG_VERBOSE:
+//        LOG_INFO2(fmt, vl);
 
+        qDebug(fmt,vl);
+        break;
+    case AV_LOG_DEBUG:
+    case AV_LOG_TRACE:
+        //LOG_DEBUG2(fmt, vl);
+            qDebug(fmt,vl);
+        break;
+    default:
+        break;
+    }
+}
+bool EncodeAACTest::enc_create() {
     av_register_all();
-    codec = avcodec_find_encoder_by_name("aac");
 
+    av_log_set_level(AV_LOG_ERROR);
+
+
+    av_log_set_callback(log_callback);
+    {
+        //        int ret = avformat_alloc_output_context2(&outputFmtCtx, nullptr, nullptr, filename);
+        //        if (ret < 0 || outputFmtCtx == nullptr) {
+        //            throw std::runtime_error("Could not deduce output format from file name");
+        //        }
+        //        AVOutputFormat *fmt = outputFmtCtx->oformat;
+    }
+    codec = avcodec_find_encoder_by_name("aac");
 
     if (!codec) {
         qDebug("Couldn't find encoder");
@@ -351,7 +359,17 @@ bool EncodeAACTest::enc_create()
         qDebug("Invalid bitrate specified");
         return false;
     }
+    //{
 
+    //    stream = avformat_new_stream(outputFmtCtx, nullptr);
+    //    if (stream == nullptr) {
+    //        throw std::runtime_error("could not allocate stream");
+    //    }
+
+    //    stream->id = static_cast<int>(outputFmtCtx->nb_streams - 1);
+    //    stream->time_base.num = 1;
+    //    stream->time_base.den = enc->sample_rate;
+    //}
     context = avcodec_alloc_context3(codec);
     if (!context) {
         qDebug("Failed to create codec context");
@@ -360,7 +378,6 @@ bool EncodeAACTest::enc_create()
 
     context->bit_rate = bitrate * 1000;
     const struct audio_output_info *aoi;
-
 
     //    //编码设置
     //    pCodecCtx = audio_st->codec;
@@ -376,36 +393,49 @@ bool EncodeAACTest::enc_create()
     context->channel_layout = AV_CH_LAYOUT_STEREO;
     context->channels = av_get_channel_layout_nb_channels(context->channel_layout);
     context->sample_rate = 44100;
-    context->sample_fmt =/*codec->sample_fmts
+    context->sample_fmt = /*codec->sample_fmts
                               ? codec->sample_fmts[0]
-                              :*/ AV_SAMPLE_FMT_FLTP;
+                              :*/
+        AV_SAMPLE_FMT_FLTP;
+
+    context = audio_st->codec;
+    context->codec_id = fmt->audio_codec; // enc->codec_id = codec->id;
+
+    context->codec_type = AVMEDIA_TYPE_AUDIO;
+    context->sample_fmt = AV_SAMPLE_FMT_FLTP /*pCodec->sample_fmts[0]*/;
+    context->sample_rate = 44100;
+    context->channel_layout = AV_CH_LAYOUT_STEREO;
+    context->channels = av_get_channel_layout_nb_channels(context->channel_layout);
+    context->bit_rate = 64000;
+    context->profile = FF_PROFILE_AAC_MAIN;
+    context->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
     /* check to make sure sample rate is supported */
-    if (codec->supported_samplerates) {
-        const int *rate = codec->supported_samplerates;
-        int cur_rate = context->sample_rate;
-        int closest = 0;
+    //    if (codec->supported_samplerates) {
+    //        const int *rate = codec->supported_samplerates;
+    //        int cur_rate = context->sample_rate;
+    //        int closest = 0;
 
-        while (*rate) {
-            int dist = abs(cur_rate - *rate);
-            int closest_dist = abs(cur_rate - closest);
+    //        while (*rate) {
+    //            int dist = abs(cur_rate - *rate);
+    //            int closest_dist = abs(cur_rate - closest);
 
-            if (dist < closest_dist)
-                closest = *rate;
-            rate++;
-        }
+    //            if (dist < closest_dist)
+    //                closest = *rate;
+    //            rate++;
+    //        }
 
-        if (closest)
-            context->sample_rate = closest;
-    }
+    //        if (closest)
+    //            context->sample_rate = closest;
+    //    }
 
     if (strcmp(codec->name, "aac") == 0) {
         av_opt_set(context->priv_data, "aac_coder", "fast", 0);
     }
 
     qDebug("bitrate: %" PRId64 ", channels: %d, channel_layout: %x\n",
-           (int64_t)context->bit_rate / 1000,
-           (int)context->channels,
-           (unsigned int)context->channel_layout);
+           (int64_t) context->bit_rate / 1000,
+           (int) context->channels,
+           (unsigned int) context->channel_layout);
 
     //    init_sizes(enc, audio);
 
@@ -414,20 +444,15 @@ bool EncodeAACTest::enc_create()
 
     context->flags = AV_CODEC_FLAG_GLOBAL_HEADER;
 
-    if (!initialize_codec()){
+    if (!initialize_codec()) {
         qDebug("initialize_codec fail");
     }
 
-
-
-
     {
-
         //    //Method 1.
         //            pFormatCtx = avformat_alloc_context();
         //            fmt = av_guess_format(NULL, out_file, NULL);
         //            pFormatCtx->oformat = fmt;
-
 
         //    //Method 2.
         //    //avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
@@ -455,8 +480,7 @@ fail:
     return true;
 }
 
-void EncodeAACTest::end()
-{
+void EncodeAACTest::end() {
     //    //Flush Encoder
     //    ret = flush_encoder(pFormatCtx,0);
     //    if (ret < 0) {
@@ -475,4 +499,14 @@ void EncodeAACTest::end()
     //    }
     avio_close(pFormatCtx->pb);
     avformat_free_context(pFormatCtx);
+}
+
+int EncodeAACTest::init1()
+{
+
+}
+
+int EncodeAACTest::init2()
+{
+
 }

@@ -77,7 +77,7 @@ bool RecoderCore::initAudio() {
         if(end == true){
             return ;
         }
-        if(i>400*100*30){
+        if(i>400*100*30/400){
             encoderTest.end();
             end =true;
         }else{
