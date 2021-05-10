@@ -6,35 +6,35 @@ EncodeAACTest::EncodeAACTest() {
 }
 
 int EncodeAACTest::init_avformat() {
-    const char *out_file = "d:/tdjm.aac"; //Output URL
-    //    int i;
+    //    const char *out_file = "d:/tdjm.aac"; //Output URL
+    //    //    int i;
 
-    //    av_register_all();
+    //    //    av_register_all();
 
-    //Method 1.
-    pFormatCtx = avformat_alloc_context();
-    fmt = av_guess_format(NULL, out_file, NULL);
-    pFormatCtx->oformat = fmt;
+    //    //Method 1.
+    //    pFormatCtx = avformat_alloc_context();
+    //    fmt = av_guess_format(NULL, out_file, NULL);
+    //    pFormatCtx->oformat = fmt;
 
-    //    //Method 2.
-    //    //avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
-    //    //fmt = pFormatCtx->oformat;
+    //    //    //Method 2.
+    //    //    //avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
+    //    //    //fmt = pFormatCtx->oformat;
 
-    //Open output URL
-    if (avio_open(&pFormatCtx->pb, out_file, AVIO_FLAG_READ_WRITE) < 0) {
-        printf("Failed to open output file!\n");
-        return -1;
-    }
+    //    //Open output URL
+    //    if (avio_open(&pFormatCtx->pb, out_file, AVIO_FLAG_READ_WRITE) < 0) {
+    //        printf("Failed to open output file!\n");
+    //        return -1;
+    //    }
 
-    audio_st = avformat_new_stream(pFormatCtx, 0);
-    if (audio_st == NULL) {
-        return -1;
-    }
-    pCodec = avcodec_find_encoder(fmt->audio_codec);
-    if (!pCodec) {
-        printf("Can not find encoder!\n");
-        return -1;
-    }
+    //    audio_st = avformat_new_stream(pFormatCtx, 0);
+    //    if (audio_st == NULL) {
+    //        return -1;
+    //    }
+    //    pCodec = avcodec_find_encoder(fmt->audio_codec);
+    //    if (!pCodec) {
+    //        printf("Can not find encoder!\n");
+    //        return -1;
+    //    }
 
     return 0;
 }
@@ -313,21 +313,21 @@ static void log_callback(void *ptr, int level, const char *fmt, va_list vl)
     case AV_LOG_ERROR:
         //        LOG_ERROR2(fmt, vl);
         //        break;
-            qDebug(fmt,vl);
+        qDebug(fmt,vl);
     case AV_LOG_WARNING:
-//        LOG_WARNING2(fmt, vl);
-    qDebug(fmt,vl);
+        //        LOG_WARNING2(fmt, vl);
+        qDebug(fmt,vl);
         break;
     case AV_LOG_INFO:
     case AV_LOG_VERBOSE:
-//        LOG_INFO2(fmt, vl);
+        //        LOG_INFO2(fmt, vl);
 
         qDebug(fmt,vl);
         break;
     case AV_LOG_DEBUG:
     case AV_LOG_TRACE:
         //LOG_DEBUG2(fmt, vl);
-            qDebug(fmt,vl);
+        qDebug(fmt,vl);
         break;
     default:
         break;
@@ -508,5 +508,292 @@ int EncodeAACTest::init1()
 
 int EncodeAACTest::init2()
 {
+    av_register_all();
+    av_log_set_level(AV_LOG_ERROR);
+    av_log_set_callback(log_callback);
 
+    codec = avcodec_find_encoder_by_name("aac");
+
+    if (!codec) {
+        qDebug("Couldn't find encoder");
+
+    }
+
+    int bitrate = 160;
+    if (!bitrate) {
+        qDebug("Invalid bitrate specified");
+        return false;
+    }
+    context = avcodec_alloc_context3(codec);
+    if (!context) {
+        qDebug("Failed to create codec context");
+        goto fail;
+    }
+
+    context->bit_rate = bitrate * 1000;
+    const struct audio_output_info *aoi;
+
+    //    //编码设置
+    //    pCodecCtx = audio_st->codec;
+    //    pCodecCtx->codec_id = fmt->audio_codec;
+    //    pCodecCtx->codec_type = AVMEDIA_TYPE_AUDIO;
+    //    pCodecCtx->sample_fmt = pCodec->sample_fmts[0];
+    //    pCodecCtx->sample_rate= 44100;
+    //    pCodecCtx->channel_layout=AV_CH_LAYOUT_STEREO;
+    //    pCodecCtx->channels = av_get_channel_layout_nb_channels(pCodecCtx->channel_layout);
+    //    pCodecCtx->bit_rate = 64000;
+    //    pCodecCtx->profile=FF_PROFILE_AAC_MAIN ;
+    //    pCodecCtx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
+    context->channel_layout = AV_CH_LAYOUT_STEREO;
+    context->channels = av_get_channel_layout_nb_channels(context->channel_layout);
+    context->sample_rate = 44100;
+    context->sample_fmt = /*codec->sample_fmts
+                              ? codec->sample_fmts[0]
+                              :*/
+        AV_SAMPLE_FMT_FLTP;
+
+
+    /* check to make sure sample rate is supported */
+    //    if (codec->supported_samplerates) {
+    //        const int *rate = codec->supported_samplerates;
+    //        int cur_rate = context->sample_rate;
+    //        int closest = 0;
+
+    //        while (*rate) {
+    //            int dist = abs(cur_rate - *rate);
+    //            int closest_dist = abs(cur_rate - closest);
+
+    //            if (dist < closest_dist)
+    //                closest = *rate;
+    //            rate++;
+    //        }
+
+    //        if (closest)
+    //            context->sample_rate = closest;
+    //    }
+
+    if (strcmp(codec->name, "aac") == 0) {
+        av_opt_set(context->priv_data, "aac_coder", "fast", 0);
+    }
+
+    qDebug("bitrate: %" PRId64 ", channels: %d, channel_layout: %x\n",
+           (int64_t) context->bit_rate / 1000,
+           (int) context->channels,
+           (unsigned int) context->channel_layout);
+
+    //    init_sizes(enc, audio);
+
+    /* enable experimental FFmpeg encoder if the only one available */
+    context->strict_std_compliance = -2;
+
+    context->flags = AV_CODEC_FLAG_GLOBAL_HEADER;
+
+
+    int ret;
+
+    aframe = av_frame_alloc();
+    if (!aframe) {
+        qDebug("Failed to allocate audio frame");
+        return false;
+    }
+
+    ret = avcodec_open2(context, codec, NULL);
+    if (ret < 0) {
+        //        struct dstr error_message = {0};
+        //        dstr_printf(&error_message, "Failed to open AAC codec: %s",
+        //                    av_err2str(ret));
+        //        obs_encoder_set_last_error(enc->encoder, error_message.array);
+        //        dstr_free(&error_message);
+        //        qDebug("Failed to open AAC codec: %s", av_err2str(ret));
+        return false;
+    }
+    aframe->format = context->sample_fmt;
+    aframe->channels = context->channels;
+    aframe->channel_layout = context->channel_layout;
+    aframe->sample_rate = context->sample_rate;
+
+    frame_size = context->frame_size;
+    if (!frame_size)
+        frame_size = 1024;
+
+    frame_size_bytes = frame_size * (int) audio_size;
+
+    ret = av_samples_alloc(samples, NULL, context->channels, frame_size, context->sample_fmt, 0);
+    if (ret < 0) {
+        //        qDebug("Failed to create audio buffer: %s", av_err2str(ret));
+        return false;
+    }
+
+
+
+    //ffmpeg_mux_init
+
+    //ffm init
+
+    {
+        ffm = new ffmpeg_mux;
+        ffm->params.file = "d:/tdjm.aac";
+    }
+
+
+    AVOutputFormat *output_format = nullptr;
+
+
+
+    output_format = av_guess_format(NULL, ffm->params.file, NULL);
+
+    if (output_format == NULL) {
+        //        fprintf(stderr, "Couldn't find an appropriate muxer for '%s'\n",
+        //                ffm->params.printable_file.array);
+        qDebug()<<"Couldn't find an appropriate muxer";
+        return false;
+    }
+    qDebug("info: Output format name and long_name: %s, %s\n",
+           output_format->name ? output_format->name : "unknown",
+           output_format->long_name ? output_format->long_name : "unknown");
+    //AVFormatContext
+    ret = avformat_alloc_output_context2(&ffm->output, output_format, NULL,
+                                         ffm->params.file);
+    if (ret < 0) {
+        fprintf(stderr, "Couldn't initialize output context: %s\n",
+                av_err2str(ret));
+        return false;
+    }
+
+    ffm->output->oformat->video_codec = AV_CODEC_ID_NONE;
+    ffm->output->oformat->audio_codec = AV_CODEC_ID_NONE;
+
+    //    if (!init_streams(ffm)) {
+    //        free_avformat(ffm);
+    //        return FFM_ERROR;
+    //    }
+    //创建音频streams
+    {
+
+        AVCodec *codec;
+        AVCodecContext *context;
+        AVStream *stream;
+        void *extradata = NULL;
+
+        //        if (!new_stream(ffm, &stream, ffm->params.acodec, &codec))
+        //            return;
+        const AVCodecDescriptor *desc = avcodec_descriptor_get_by_name(ffm->params.acodec);
+
+        if (!desc) {
+            fprintf(stderr, "Couldn't find encoder '%s'\n", ffm->params.acodec);
+            return false;
+        }
+
+        codec = avcodec_find_encoder(desc->id);
+        if (!codec) {
+            fprintf(stderr, "Couldn't create encoder\n");
+            return false;
+        }
+
+        stream = avformat_new_stream(ffm->output, codec);
+        if (!stream) {
+            fprintf(stderr, "Couldn't create stream for encoder '%s'\n",
+                    ffm->params.acodec);
+            return false;
+        }
+
+        stream->id = ffm->output->nb_streams - 1;
+        av_dict_set(&stream->metadata, "title", ffm->audio->name, 0);
+
+        stream->time_base = (AVRational){1, ffm->audio->sample_rate};
+
+        //        if (ffm->audio_header[idx].size) {
+        //            extradata = av_memdup(ffm->audio_header[idx].data,
+        //                                  ffm->audio_header[idx].size);
+        //        }
+
+
+        context = avcodec_alloc_context3(codec);
+
+        context->bit_rate = (/*int64_t)ffm->audio[idx].abitrate * 1000*/;
+        context->channels = /*ffm->audio[idx].channels*/;
+        context->sample_rate = /*ffm->audio[idx].sample_rate*/;
+        context->sample_fmt = AV_SAMPLE_FMT_S16;
+        context->time_base = stream->time_base;
+        context->extradata = extradata;
+        context->extradata_size = ffm->audio_header[idx].size;
+        context->channel_layout =
+            av_get_default_channel_layout(context->channels);
+        //AVlib default channel layout for 4 channels is 4.0 ; fix for quad
+        if (context->channels == 4)
+            context->channel_layout = av_get_channel_layout("quad");
+        //AVlib default channel layout for 5 channels is 5.0 ; fix for 4.1
+        if (context->channels == 5)
+            context->channel_layout = av_get_channel_layout("4.1");
+        if (ffm->output->oformat->flags & AVFMT_GLOBALHEADER)
+            context->flags |= CODEC_FLAG_GLOBAL_H;
+
+
+        avcodec_parameters_from_context(stream->codecpar, context);
+
+
+        ffm->audio_infos[ffm->num_audio_streams].stream = stream;
+        ffm->audio_infos[ffm->num_audio_streams].ctx = context;
+        ffm->num_audio_streams++;
+    }
+
+
+    //    ret = open_output_file(ffm);
+    //    if (ret != FFM_SUCCESS) {
+    //        free_avformat(ffm);
+    //        return ret;
+    //    }
+    {
+        AVOutputFormat *format = ffm->output->oformat;
+        int ret;
+
+        if ((format->flags & AVFMT_NOFILE) == 0) {
+            ret = avio_open(&ffm->output->pb, ffm->params.file,
+                            AVIO_FLAG_WRITE);
+            if (ret < 0) {
+//                qDebug(stderr, "Couldn't open '%s', %s\n",
+//                        ffm->params.printable_file.array,
+//                        av_err2str(ret));
+                return false;
+            }
+        }
+
+        AVDictionary *dict = NULL;
+        if ((ret = av_dict_parse_string(&dict, ffm->params.muxer_settings, "=",
+                                        " ", 0))) {
+//            qDebug(stderr, "Failed to parse muxer settings: %s\n%s\n",
+//                    av_err2str(ret), ffm->params.muxer_settings);
+
+            av_dict_free(&dict);
+        }
+
+        if (av_dict_count(dict) > 0) {
+            qDebug("Using muxer settings:");
+
+            AVDictionaryEntry *entry = NULL;
+            while ((entry = av_dict_get(dict, "", entry,
+                                        AV_DICT_IGNORE_SUFFIX)))
+                printf("\n\t%s=%s", entry->key, entry->value);
+
+            printf("\n");
+        }
+
+        //头文件
+        ret = avformat_write_header(ffm->output, &dict);
+        if (ret < 0) {
+//            qDebug(stderr, "Error opening '%s': %s",
+//                    ffm->params.printable_file.array, av_err2str(ret));
+
+//            av_dict_free(&dict);
+
+//            return ret == -22 ? FFM_UNSUPPORTED : FFM_ERROR;
+        }
+
+        av_dict_free(&dict);
+
+    }
+
+fail:
+    //    enc_destroy(enc);
+    return true;
 }

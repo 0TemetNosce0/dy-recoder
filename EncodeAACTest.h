@@ -34,7 +34,57 @@ public:
     size_t packet_bufferStartPos = 0;
     size_t packet_bufferSize = 0;
     //write packet
-    AVFormatContext *pFormatCtx = nullptr;
-    AVOutputFormat *fmt = nullptr;
-    AVStream *audio_st = nullptr;
+    struct main_params {
+        char *file;
+        /* printable_file is file with any stream key information removed */
+//        struct dstr printable_file;
+        int has_video;
+        int tracks;
+        char *vcodec;
+        int vbitrate;
+        int gop;
+        int width;
+        int height;
+        int fps_num;
+        int fps_den;
+        int color_primaries;
+        int color_trc;
+        int colorspace;
+        int color_range;
+        char *acodec;
+        char *muxer_settings;
+    };
+    struct audio_params {
+        char *name;
+        int abitrate;
+        int sample_rate;
+        int channels;
+    };
+
+    struct header {
+        uint8_t *data;
+        int size;
+    };
+
+    struct audio_info {
+        AVStream *stream;
+        AVCodecContext *ctx;
+    };
+    struct ffmpeg_mux {
+        AVFormatContext *output;
+        AVStream *video_stream;
+        AVCodecContext *video_ctx;
+        struct audio_info *audio_infos;
+        struct main_params params;
+        struct audio_params *audio;
+        struct header video_header;
+        struct header *audio_header;
+        int num_audio_streams;
+        bool initialized;
+        char error[4096];
+    };
+    struct ffmpeg_mux    * ffm = {0};
+//    AVFormatContext *pFormatCtx = nullptr;
+//    AVOutputFormat *fmt = nullptr;
+//    AVStream *audio_st = nullptr;
 };
