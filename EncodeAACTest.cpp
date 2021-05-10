@@ -509,6 +509,8 @@ int EncodeAACTest::init1()
 int EncodeAACTest::init2()
 {
     av_register_all();
+
+    //log 回调
     av_log_set_level(AV_LOG_ERROR);
     av_log_set_callback(log_callback);
 
@@ -709,14 +711,14 @@ int EncodeAACTest::init2()
 
 
         context = avcodec_alloc_context3(codec);
-
+//设置: 比特率  通道  采样格式 timebase 采样布局
         context->bit_rate = (/*int64_t)ffm->audio[idx].abitrate * 1000*/;
         context->channels = /*ffm->audio[idx].channels*/;
         context->sample_rate = /*ffm->audio[idx].sample_rate*/;
         context->sample_fmt = AV_SAMPLE_FMT_S16;
         context->time_base = stream->time_base;
-        context->extradata = extradata;
-        context->extradata_size = ffm->audio_header[idx].size;
+//        context->extradata = extradata;
+//        context->extradata_size = ffm->audio_header[idx].size;
         context->channel_layout =
             av_get_default_channel_layout(context->channels);
         //AVlib default channel layout for 4 channels is 4.0 ; fix for quad
