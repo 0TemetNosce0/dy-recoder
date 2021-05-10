@@ -8,7 +8,11 @@ ffmpeg文档 https://ffmpeg.org/documentation.html
 
 ffmpeg download https://ffmpeg.org/download.html
 
+ffmpeg  filters http://ffmpeg.org/ffmpeg-filters.html
 
+ffmpeg   Error Codes https://ffmpeg.org/doxygen/trunk/group__lavu__error.html
+
+ffmpeg doxygen  https://ffmpeg.org/doxygen/trunk/index.html
 
 ffmpeg 的 Mux 主要分为 三步操作：
 
@@ -25,9 +29,245 @@ ffmpeg 的 Mux 主要分为 三步操作：
 
 https://blog.csdn.net/leixiaohua1020/article/details/44199673
 
+# 基本知识
+
+**编解码**
+
+　　编解码器（codec）指的是一个能够对一个信号或者一个数据流进行变换的设备或者程序。这里指的变换既包括将  信号或者数据流进行编码（通常是为了传输、存储或者加密）或者提取得到一个编码流的操作，也包括为了观察或者处理从这个编码流中恢复适合观察或操作的形式的操作。编解码器经常用在视频会议和流媒体等应用中。
+
+**容器** 
+
+　　很多多媒体数据流需要同时包含音频数据和视频数据，这时通常会加入一些用于音频和视频数据同步的元数据，例如字幕。这三种数据流可能会被不同的程序，进程或者硬件处理，但是当它们传输或者存储的时候，这三种数据通常是被封装在一起的。通常这种封装是通过视频文件格 式来实现的，例如常见的*.mpg, *.avi, *.mov, *.mp4, *.rm, *.ogg or *.tta.  这些格式中有些只能使用某些编解码器，而更多可以以容器的方式使用各种编解码器。
+
+**分辨率** 
+
+　　分辨率，泛指量测或显示系统对细节的分辨能力。此概念可以用时间、空间等领域的量测。日常用语中之分辨率多用于图像的清晰度。分辨率越高代表图像品质越好，越能表现出更多的细节。但相对的，因为纪录的信息越多，文件也就会越大。目前个人电脑里的图像，可以使用图像 处理软件，调整图像的大小、编修照片等。例如 photoshop，或是photoimpact等软件。
+
+　**图像分辨率** ：
+
+　　用以描述图像细节分辨能力，同样适用于数字图像、胶卷图像、及其他类型图像。常用'线每毫米'、  '线每英吋'等来衡量。通常，“分辨率”被表示成每一个方向上的像素数量，比如640x480等。而在某些情况下，它也可以同时表示成“每英吋像素”  （pixels per inch，ppi）以及图形的长度和宽度。比如72ppi，和8x6英吋。
+
+　**视频分辨率** ：
+
+各种电视规格分辨率比较视  频的画面大小称为“分辨率”。数位视频以像素为度量单位，而类比视频以水平扫瞄线数量为度量单位。标清电视频号分辨率为  720/704/640x480i60（NTSC）或768/720x576i50（PAL/SECAM）。新的高清电视（HDTV）分辨率可达  1920x1080p60，即每条水平扫瞄线有1920个像素，每个画面有1080条扫瞄线，以每秒钟60张画面的速度播放。
+
+**画面更新率fps**
+
+　　Frame  rate中文常译为“画面更新率”或“帧率”，是指视频格式每秒钟播放的静态画面数量。典型的画面更新率由早期的每秒6或8张（frame  persecond，简称fps），至现今的每秒120张不等。PAL (欧洲，亚洲，澳洲等地的电视广播格式) 与 SECAM  (法国，俄国，部分非洲等地的电视广播格式) 规定其更新率为25fps，而NTSC (美国，加拿大，日本等地的电视广播格式)  则规定其更新率为29.97  fps。电影胶卷则是以稍慢的24fps在拍摄，这使得各国电视广播在播映电影时需要一些复杂的转换手续（参考Telecine转换）。要达成最基本的视觉暂留效果大约需要10fps的速度。
+
+**压缩方法**
+
+**有损压缩和无损压缩**
+
+　　在视频压缩中有损（Lossy  ）和无损（Lossless）的概念与静态图像中基本类似。无损压缩也即压缩前和解压缩后的数据完全一致。多数的无损压缩都采用RLE行程编码算法。有损  压缩意味着解压缩后的数据与压缩前的数据不一致。在压缩的过程中要丢失一些人眼和人耳所不敏感的图像或音频信息，而且丢失的信息不可恢复。几乎所有高压缩的算法都采用有损压缩，这样才能达到低数据率的目标。丢失的数据率与压缩比有关，压缩比越小，丢失的数据越多，解压缩后的效果一般越差。此外，某些有损压 缩算法采用多次重复压缩的方式，这样还会引起额外的数据丢失。
+
+- 无损格式，例如WAV，PCM，TTA，FLAC，AU，APE，TAK，WavPack(WV)
+- 有损格式，例如MP3，Windows Media Audio（WMA），Ogg Vorbis（OGG），AAC
+
+**帧内压缩和帧间压缩**
+
+　　帧内（Intraframe）压缩也称为空间压缩 （Spatial  compression）。当压缩一帧图像时，仅考虑本帧的数据而不考虑相邻帧之间的冗余信息，这实际上与静态图像压缩类似。帧内一般采用有损压缩算法，由于帧内压缩时各个帧之间没有相互关系，所以压缩后的视频数据仍可以以帧为单位进行编辑。帧内压缩一般达不到很高的压缩。
+
+　　采用帧间（Interframe）压缩是基于许多视频或  动画的连续前后两帧具有很大的相关性，或者说前后两帧信息变化很小的特点。也即连续的视频其相邻帧之间具有冗余信息，根据这一特性，压缩相邻帧之间的冗余量就可以进一步提高压缩量，减小压缩比。帧间压缩也称为时间压缩（Temporalcompression），它通过比较时间轴上不同帧之间的数据进行压缩。帧间压缩一般是无损的。帧差值（Frame differencing）算法是一种典型的时间压缩法，它通过比较本帧与相邻帧之间的差异，仅记录本帧与其相邻帧的差值，这样可以大大减少数据量。
+
+**对称编码和不对称编码** 
+
+　　对称性（symmetric）是压缩编码的一个关键特  征。对称意味着压缩和解压缩占用相同的计算处理能力和时间，对称算法适合于实时压缩和传送视频，如视频会议应用就以采用对称的压缩编码算法为好。而在电子出版和其它多媒体应用中，一般是把视频预先压缩处理好，尔后再播放，因此可以采用不对称（asymmetric）编码。不对称或非对称意味着压缩时需要花费大量的处理能力和时间，而解压缩时则能较好地实时回放，也即以不同的速度进行压缩和解压缩。一般地说，压缩一段视频的时间比回放（解压缩）该视频的时间 要多得多。例如，压缩一段三分钟的视频片断可能需要10多分钟的时间，而该片断实时回放时间只有三分钟。
 
 
-# FFMpeg 滤镜中英文对照
+
+资料（港台将information翻译为资料）压缩是透过去除资料中的冗余资讯而达成。就视讯资料而言，资料中的冗余资讯可以分成四类：
+
+时间上的冗余资讯（temporal redundancy）
+　　在视讯资料中，相邻的帧（frame）与帧之间通常有很强的关连性，这样的关连性即为时间上的冗余资讯。这即是上一次学习中的帧间压缩。 
+
+空间上的冗余资讯（spatial redundancy）
+　　在同一张帧之中，相邻的像素之 间通常有很强的关连性，这样的关连性即为空间上的冗余资讯。这即是上一次学习中的帧内压缩。 
+
+统计上的冗余资讯（statistical redundancy）
+　　统计上的冗余资讯指的是欲编码的符号（symbol）的机率分布是不均匀（non-uniform）的。 
+
+感知上的冗余资讯（perceptual redundancy）
+　　感知上的冗余资讯是指在人在观看视讯时，人眼无法察觉的资讯。 
+
+ 
+
+　　视讯压缩（英文：Video  compression）是指运用资料压缩技术将数位视讯资料中的冗余资讯去除，降低表示原始视讯所需的资料量，以便视讯资料的传输与储存。实际上，原始视讯资料的资料量往往过大，例如未经压缩的电视品质视讯资料的位元率高达216Mbps，绝大多数的应用无法处理如此庞大的资料量，因此视讯压缩是必要的。目前最新的视讯编码标准为ITU-T视讯编码专家组（VCEG）和ISO／IEC动态图像专家组（MPEG）联合组成的联合视讯组（JVT，Joint Video Team）所提出的H.264/AVC。
+
+　　一个典型的视讯编码器：在进行当前信号编码时，编码器首先会产生对当前信号做预测的信号，称作预测信号（predicted signal），预测的方式可以是时间上的预测（interprediction），亦即使用先前帧的信号做预测，或是空间上的预测 （intra  prediction），亦即使用同一张帧之中相邻像素的信号做预测。得到预测信号后，编码器会将当前信号与预测信号相减得到残余信号（residual  signal），并只对残余信号进行编码，如此一来，可以去除一部份时间上或是空间上的冗余资讯。接着，编码器并不会直接对残余信号进行编码，而是先将残余信号经过变换（通常为离散余弦变换）然后量化以 进一步去除空间上和感知上的冗余资讯。量化后得到的量化系数会再透过熵编码，去除统计上的冗余资讯。 
+
+| **视讯编码标准发展** |                                                              |                                                              |                                |                                                              |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------ |
+| **年份**             | **标准**                                                     | **制定组织**                                                 | **解除版权保护 （DRM-free ）** | **主要应用**                                                 |
+| **1984**             | [H.120](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DH.120%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) | [ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FITU-T) | 是                             |                                                              |
+| **1990**             | [H.261](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.261) | [ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FITU-T) | 是                             | [视讯会议](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%A6%96%E8%A8%8A%E6%9C%83%E8%AD%B0)、[视讯通话](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3D%E8%A6%96%E8%A8%8A%E9%80%9A%E8%A9%B1%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) |
+| **1993**             | [MPEG-1 第二部份](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG-1_%E7%AC%AC%E4%BA%8C%E9%83%A8%E4%BB%BD%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) | [ISO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FISO) ／[IEC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FIEC) | 是                             | 影音光碟（[VCD](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FVCD) ） |
+| **1995**             | [H.262/MPEG-2 第二部份](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DH.262%2FMPEG-2_%E7%AC%AC%E4%BA%8C%E9%83%A8%E4%BB%BD%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) | [ISO ](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FISO)／ [IEC ](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FIEC)、[ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FITU-T) | 否                             | [DVD影碟](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DDVD%E5%BD%B1%E7%A2%9F%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1)（[DVD-Video](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDVD-Video) ）、[蓝光](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%97%8D%E5%85%89)（[Blu-Ray](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DBlu-Ray%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) ）影碟、数位视讯广播（[DVB](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDVB) ）、[SVCD](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FSVCD) |
+| **1996**             | [H.263](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.263) [[6\]](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%A7%86%E9%A2%91%E5%8E%8B%E7%BC%A9%23_note-H263-5) | [ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FITU-T) |                                | [视讯会议](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%A6%96%E8%A8%8A%E6%9C%83%E8%AD%B0)、[视讯通话](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3D%E8%A6%96%E8%A8%8A%E9%80%9A%E8%A9%B1%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1)、[3G](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F3G) 手机视讯（[3GP](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F3GP) ） |
+| **1999**             | [MPEG-4 第二部份](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG-4_%E7%AC%AC%E4%BA%8C%E9%83%A8%E4%BB%BD%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) | [ISO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FISO) ／[IEC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FIEC) | 否                             |                                                              |
+| **2003**             | [H.264/MPEG-4 AVC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.264%2FMPEG-4_AVC) [[1\]](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%A7%86%E9%A2%91%E5%8E%8B%E7%BC%A9%23_note-H264_AVC-0) | [ISO ](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FISO)／ [IEC ](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FIEC)、[ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FITU-T) | 否                             | [蓝光](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E8%97%8D%E5%85%89)（[Blu-Ray](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DBlu-Ray%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) ）影碟、数位视讯广播（[DVB](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDVB) ）、[iPod](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FIPod) 视讯、[高画质DVD](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3D%E9%AB%98%E7%95%AB%E8%B3%AADVD%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1)（[HD DVD](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FHD_DVD) ） |
+
+常见的编解码见下表，在以后会分类论述： 
+
+| 视频codec                                                    | [ISO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9C%8B%E9%9A%9B%E6%A8%99%E6%BA%96%E5%8C%96%E7%B5%84%E7%B9%94) /[IEC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E5%B7%A5%E5%A7%94%E5%91%98%E4%BC%9A) | [MJPEG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMotion_JPEG) **·** [Motion JPEG 2000](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FJPEG_2000%23Motion_JPEG_2000) **·** [MPEG-1](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG-1) **·** [MPEG-2](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG-2) ([Part 2](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DH.262%2FMPEG-2_Part_2%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) )**·** [MPEG-4](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG-4) ([Part 2/ASP](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG-4_Part_2%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [Part 10/AVC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.264%2FMPEG-4_AVC) )**·** [HVC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DHigh-performance_Video_Coding%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E4%BF%A1%E8%81%94%E7%9B%9F%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E6%A0%87%E5%87%86%E5%8C%96%E7%BB%84) | [H.120](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DH.120%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [H.261](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.261) **·** [H.262](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DH.262%2FMPEG-2_Part_2%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [H.263](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.263) **·** [H.264](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.264%2FMPEG-4_AVC) **·** [H.265](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FH.265) |                                                              |
+| 其它                                                         | [AMV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAMV_video_format) **·** [AVS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_Video_Standard) **·** [Bink](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FBink_Video) **·** [CineForm](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FCineForm) **·** [Cinepak](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FCinepak) **·** [Dirac](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDirac_%28codec%29) **·** [DV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDV) **·** [Indeo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FIndeo) **·** [Microsoft Video 1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMicrosoft_Video_1) **·** [OMS Video](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOMS_Video) **·** [Pixlet](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FPixlet) **·** [RealVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRealVideo) **·** [RTVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRTVideo) **·** [SheerVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSheerVideo) **·** [Smacker](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSmacker_video) **·** [Sorenson Video & Sorenson Spark ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSorenson_codec)**·** [Theora ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTheora)**·** [VC-1 ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVC-1)**·** [VP3 ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP3)**·** [VP6 ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP6)**·** [VP7 ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP7)**·** [VP8 ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP8)**·** [WMV ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWindows_Media_Video) |                                                              |
+| 音频 codec                                                   | [ISO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9C%8B%E9%9A%9B%E6%A8%99%E6%BA%96%E5%8C%96%E7%B5%84%E7%B9%94) /[IEC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E5%B7%A5%E5%A7%94%E5%91%98%E4%BC%9A) [MPEG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG) | [MPEG-1 Layer III (MP3)](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMP3) **·** [MPEG-1 Layer II](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG-1_Audio_Layer_II) **·** [MPEG-1 Layer I](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG-1_Audio_Layer_I%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [AAC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FAdvanced_Audio_Coding) **·** [HE-AAC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DHigh-Efficiency_Advanced_Audio_Coding%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MPEG-4 ALS](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DAudio_Lossless_Coding%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MPEG-4 SLS](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG-4_SLS%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MPEG-4 DST](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDirect_Stream_Transfer%23DST) |
+| [ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E4%BF%A1%E8%81%94%E7%9B%9F%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E6%A0%87%E5%87%86%E5%8C%96%E7%BB%84) | [G.711](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FG.711) **·** [G.718](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.718%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.719](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.719%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.722](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FG.722) **·** [G.722.1](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.722.1%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.722.2](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.722.2%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.723](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FG.723) **·** [G.723.1](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.723.1%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.726](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FG.726) **·** [G.728](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.728%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [G.729](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FG.729) **·** [G.729.1](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DG.729.1%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) |                                                              |
+| 其它                                                         | [AC-3](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDolby_Digital) **·** [AMR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Multi-Rate_audio_codec) **·** [AMR-WB](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Multi-Rate_Wideband) **·** [AMR-WB+](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FExtended_Adaptive_Multi-Rate_-_Wideband) **·** [Apple Lossless](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FApple_Lossless) **·** [ATRAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Transform_Acoustic_Coding) **·** [DRA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDynamic_Resolution_Adaptation) **·** [DTS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDTS_%28sound_system%29) **·** [FLAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FFree_Lossless_Audio_Codec) **·** [GSM-HR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHalf_Rate) **·** [GSM-FR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FFull_Rate) **·** [GSM-EFR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FEnhanced_Full_Rate) **·** [iLBC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternet_Low_Bit_Rate_Codec) **·** [Monkey's Audio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMonkey%27s_Audio) **·** [TTA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTTA_%28codec%29) (True Audio)**·** [MT9](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMT9) **·** [μ-law](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2F%CE%9C-law_algorithm) **·** [Musepack](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMusepack) **·** [Nellymoser](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FNellymoser_Asao_Codec) **·** [OptimFROG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOptimFROG) **·** [OSQ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOriginal_Sound_Quality) **·** [RealAudio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRealAudio) **·** [RTAudio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRTAudio) **·** [SD2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDigidesign%23Sound_Designer_File_Formats) **·** [SHN](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FShorten) **·** [SILK](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSILK) **·** [Siren](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSiren_Codec) **·** [Speex](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSpeex) **·** [TwinVQ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTwinVQ) **·** [Vorbis](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVorbis) **·** [WavPack](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWavPack) **·** [WMA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWindows_Media_Audio) |                                                              |
+| 图像压缩                                                     | [ISO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9C%8B%E9%9A%9B%E6%A8%99%E6%BA%96%E5%8C%96%E7%B5%84%E7%B9%94) /[IEC](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E5%B7%A5%E5%A7%94%E5%91%98%E4%BC%9A) /[ITU-T](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F%E5%9B%BD%E9%99%85%E7%94%B5%E4%BF%A1%E8%81%94%E7%9B%9F%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E6%A0%87%E5%87%86%E5%8C%96%E7%BB%84) | [JPEG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FJPEG) **·** [JPEG 2000](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FJPEG_2000) **·** [JPEG XR](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DJPEG_XR%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [lossless JPEG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DLossless_JPEG%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [JBIG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FJBIG) **·** [JBIG2](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DJBIG2%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [PNG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FPortable_Network_Graphics) **·** [WBMP](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DWireless_Application_Protocol_Bitmap_Format%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) |
+| Others                                                       | [APNG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FAPNG) **·** [BMP](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FBMP) **·** [DjVu](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDjVu) **·** [EXR](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DOpenEXR%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [GIF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FGraphics_Interchange_Format) **·** [ICER](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DICER%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [ILBM](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DILBM%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MNG](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMultiple-image_Network_Graphics) **·** [PCX](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FPCX) **·** [PGF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DProgressive_Graphics_File%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [TGA](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DTruevision_TGA%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [TIFF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FTagged_Image_File_Format) |                                                              |
+| 媒体容器                                                     | 通用                                                         | [3GP](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2F3GP) **·** [ASF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DAdvanced_Systems_Format%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [AVI](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FAudio_Video_Interleave) **·** [Bink](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DBink_Video%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [BXF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DBroadcast_eXchange_Format%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [DMF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FDivX%23DivX.E6.A0.BC.E5.BC.8F) **·** [DPX](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DDigital_Picture_Exchange%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [EVO](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DEnhanced_VOB%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [FLV](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FFlash_Video) **·** [GXF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DGeneral_Exchange_Format%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [M2TS](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FM2TS) **·** [Matroska](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMatroska) **·** [MPEG-PS](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG_program_stream%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MPEG-TS](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMPEG_transport_stream%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [MP4](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FMPEG-4_Part_14) **·** [MXF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DMXF%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [Ogg](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FOgg) **·** [QuickTime](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FQuickTime) **·** [RealMedia](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FRealMedia) **·** [RIFF](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FResource_Interchange_File_Format) **·** [Smacker](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DSmacker_video%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) **·** [VOB](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DVOB%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1) |
+| 只用于音频                                                   | [AIFF ](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FAIFF)**·** [AU](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DAu%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%26amp%3Baction%3Dedit%26amp%3Bredlink%3D1)**·** [WAV](http://www.open-open.com/home/link.php?url=http://zh.wikipedia.org%2Fzh-cn%2FWAV) |                                                              |
+
+上面的表格，查看某个具体的codec，可以在中文的wiki中查找，但是英文的wiki咨询更为丰富，见下表 
+
+| **[Multimedia](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMultimedia) [compression](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FData_compression) formats** |                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [Video compression](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVideo_compression) | [ISO](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Organization_for_Standardization) /[IEC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Electrotechnical_Commission)   [MJPEG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMotion_JPEG) **·** [Motion JPEG 2000](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJPEG_2000%23Motion_JPEG_2000) **·** [MPEG-1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-1) **·** [MPEG-2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-2) ([Part 2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.262%2FMPEG-2_Part_2) )**·** [MPEG-4](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4) ([Part 2/ASP](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4_Part_2) **·** [Part 10/AVC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.264%2FMPEG-4_AVC) )**·** [HEVC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHigh_Efficiency_Video_Coding)    [ITU-T](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FITU-T)   [H.120](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.120) **·** [H.261](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.261) **·** [H.262](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.262%2FMPEG-2_Part_2) **·** [H.263](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.263) **·** [H.264](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FH.264%2FMPEG-4_AVC) **·** [HEVC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHigh_Efficiency_Video_Coding)    Others  [AMV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAMV_video_format) **·** [AVS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_Video_Standard) **·** [Bink](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FBink_Video) **·** [CineForm](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FCineForm) **·** [Cinepak](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FCinepak) **·** [Dirac](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDirac_%28codec%29) **·** [DV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDV) **·** [Indeo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FIndeo) **·** [Microsoft Video 1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMicrosoft_Video_1) **·** [OMS Video](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOMS_Video) **·** [Pixlet](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FPixlet) **·** [RealVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRealVideo) **·** [RTVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRTVideo) **·** [SheerVideo](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSheerVideo) **·** [Smacker](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSmacker_video) **·** [Sorenson Video & Sorenson Spark](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSorenson_codec) **·** [Theora](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTheora) **·** [VC-1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVC-1) **·** [VP3](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP3) **·** [VP6](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP6) **·** [VP7](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP7) **·** [VP8](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVP8) **·** [WMV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWindows_Media_Video) |
+| [Audio compression](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_compression_%28data%29) | [ISO](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Organization_for_Standardization) /[IEC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Electrotechnical_Commission)   [MPEG-1 Layer III (MP3)](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMP3) **·** [MPEG-1 Layer II](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-1_Audio_Layer_II) **·** [MPEG-1 Layer I](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-1_Audio_Layer_I) **·** [AAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdvanced_Audio_Coding) **·** [HE-AAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHigh-Efficiency_Advanced_Audio_Coding) **·** [MPEG-4 ALS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_Lossless_Coding) **·** [MPEG-4 SLS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4_SLS) **·** [MPEG-4 DST](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDirect_Stream_Transfer%23DST) **·** [MPEG-4 HVXC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHarmonic_Vector_Excitation_Coding) **·** [MPEG-4 CELP](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4_Part_3%23Subparts)    [ITU-T](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FITU-T)   [G.711](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.711) **·** [G.718](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.718) **·** [G.719](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.719) **·** [G.722](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.722) **·** [G.722.1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.722.1) **·** [G.722.2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.722.2) **·** [G.723](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.723) **·** [G.723.1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.723.1) **·** [G.726](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.726) **·** [G.728](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.728) **·** [G.729](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.729) **·** [G.729.1](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FG.729.1)    Others  [AC-3](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDolby_Digital) **·** [AMR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Multi-Rate_audio_codec) **·** [AMR-WB](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Multi-Rate_Wideband) **·** [AMR-WB+](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FExtended_Adaptive_Multi-Rate_-_Wideband) **·** [Apple Lossless](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FApple_Lossless) **·** [ATRAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdaptive_Transform_Acoustic_Coding) **·** [DRA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDynamic_Resolution_Adaptation) **·** [DTS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDTS_%28sound_system%29) **·** [FLAC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FFree_Lossless_Audio_Codec) **·** [GSM-HR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FHalf_Rate) **·** [GSM-FR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FFull_Rate) **·** [GSM-EFR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FEnhanced_Full_Rate) **·** [iLBC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternet_Low_Bit_Rate_Codec) **·** [Monkey's Audio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMonkey%27s_Audio) **·** [TTA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTTA_%28codec%29) (True Audio)**·** [MT9](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMT9) **·** [μ-law](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2F%CE%9C-law_algorithm) **·** [Musepack](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMusepack) **·** [Nellymoser](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FNellymoser_Asao_Codec) **·** [OptimFROG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOptimFROG) **·** [OSQ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOriginal_Sound_Quality) **·** [RealAudio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRealAudio) **·** [RTAudio](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRTAudio) **·** [SD2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDigidesign%23Sound_Designer_File_Formats) **·** [SHN](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FShorten) **·** [SILK](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSILK) **·** [Siren](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSiren_Codec) **·** [Speex](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSpeex) **·** [TwinVQ](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTwinVQ) **·** [Vorbis](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVorbis) **·** [WavPack](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWavPack) **·** [WMA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWindows_Media_Audio) |
+| [Image compression](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FImage_compression) | [ISO](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Organization_for_Standardization) /[IEC](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FInternational_Electrotechnical_Commission) /[ITU-T](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FITU-T)   [JPEG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJPEG) **·** [JPEG 2000](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJPEG_2000) **·** [JPEG XR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJPEG_XR) **·** [lossless JPEG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FLossless_JPEG) **·** [JBIG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJBIG) **·** [JBIG2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJBIG2) **·** [PNG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FPortable_Network_Graphics) **·** [WBMP](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWireless_Application_Protocol_Bitmap_Format)    Others  [APNG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAPNG) **·** [BMP](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FBMP_file_format) **·** [DjVu](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDjVu) **·** [EXR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOpenEXR) **·** [GIF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FGraphics_Interchange_Format) **·** [ICER](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FICER) **·** [ILBM](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FILBM) **·** [MNG](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMultiple-image_Network_Graphics) **·** [PCX](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FPCX) **·** [PGF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FProgressive_Graphics_File) **·** [TGA](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTruevision_TGA) **·** [QTVR](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FQuickTime_VR) **·** [TIFF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FTagged_Image_File_Format) |
+| [Media containers](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FContainer_format_%28digital%29) | ISO/IEC  [MPEG-PS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG_program_stream) **·** [MPEG-TS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG_transport_stream) **·** [MPEG-4 Part 12](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4_Part_12) /[JPEG 2000 Part 12](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FJPEG_2000%23Motion_JPEG_2000) **·** [MPEG-4 Part 14](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-4_Part_14)    ITU-T  [H.222.0](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMPEG-2%23Systems)    Others  [3GP and 3G2](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2F3GP_and_3G2) **·** [ASF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAdvanced_Systems_Format) **·** [AVI](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_Video_Interleave) **·** [Bink](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FBink_Video) **·** [DivX Media Format](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDivX_Media_Format) **·** [DPX](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FDigital_Picture_Exchange) **·** [EVO](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FEnhanced_VOB) **·** [Flash Video](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FFlash_Video) **·** [GXF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FGeneral_Exchange_Format) **·** [M2TS](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2F.m2ts) **·** [Matroska](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMatroska) **·** [MXF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMaterial_Exchange_Format) **·** [Ogg](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FOgg) **·** [QuickTime](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FQuickTime) **·** [RealMedia](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FRealMedia) **·** [REDCODE RAW](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FREDCODE) **·** [RIFF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FResource_Interchange_File_Format) **·** [Smacker](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FSmacker_video) **·** [MOD and TOD](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FMOD_and_TOD_%28video_format%29) **·** [VOB](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FVOB) **·** [WebM](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWebM)    Audio only  [AIFF](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAudio_Interchange_File_Format) **·** [AU](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FAu_file_format) **·** [WAV](http://www.open-open.com/home/link.php?url=http://en.wikipedia.org%2Fwiki%2FWAV) |
+
+ 
+
+**通常会见到的码率控制模式有** 
+ ABR [ Average Bitrate ]（平均目标码率模式） 
+ CBR [ Constant Bitrate ]（固定码率模式） 
+ 2pass..3pass..npass（二次..三次..n次编码模式..严格来说也属于平均目标码率模式.但其码率 浮动较ABR高出不少.） 
+ CRF [ Constant Ratefactor ] （固定码率系数模式） 
+ QP [ Constant Quantizer ] （固定量化值模式） 
+
+# ffmpeg中的时间单位
+
+ **AV_TIME_BASE**
+
+ffmpeg中的内部计时单位（时间基），ffmepg中的所有时间都是于它为一个单位，比如AVStream中的duration即以为着这个流的长度为duration个AV_TIME_BASE。AV_TIME_BASE定义为：
+
+```
+#define         AV_TIME_BASE   1000000
+```
+
+ 
+
+ **AV_TIME_BASE_Q**
+
+ffmpeg内部时间基的分数表示，实际上它是AV_TIME_BASE的倒数。从它的定义能很清楚的看到这点：
+
+```
+#define         AV_TIME_BASE_Q   (AVRational){1, AV_TIME_BASE}
+```
+
+ 
+
+AVRatioal的定义如下：
+
+```
+typedef struct AVRational{
+int num; //numerator
+int den; //denominator
+} AVRational;
+```
+
+ffmpeg提供了一个把AVRatioal结构转换成double的函数：
+
+```
+static inline double av_q2d(AVRational a)｛
+/**
+* Convert rational to double.
+* @param a rational to convert
+**/
+    return a.num / (double) a.den;
+}
+```
+
+
+现在可以根据pts来计算一桢在整个视频中的时间位置：
+
+```
+timestamp(秒) = pts * av_q2d(st->time_base)
+ 
+```
+
+计算视频长度的方法：
+
+```
+time(秒) = st->duration * av_q2d(st->time_base)
+ 
+```
+
+这里的st是一个AVStream对象指针。
+
+**时间基转换公式**
+
+- timestamp(ffmpeg内部时间戳) = AV_TIME_BASE * time(秒)
+- time(秒) = AV_TIME_BASE_Q * timestamp(ffmpeg内部时间戳)
+
+所以当需要把视频跳转到N秒的时候可以使用下面的方法：
+
+```
+int64_t timestamp = N * AV_TIME_BASE; 
+2
+av_seek_frame(fmtctx, index_of_video, timestamp, AVSEEK_FLAG_BACKWARD);
+```
+
+ffmpeg同样为我们提供了不同时间基之间的转换函数：
+
+```
+int64_t av_rescale_q(int64_t a, AVRational bq, AVRational cq)
+```
+
+这个函数的作用是计算a * bq / cq，来把时间戳从一个时基调整到另外一个时基。在进行时基转换的时候，我们应该首选这个函数，因为它可以避免溢出的情况发生。
+
+
+
+**time_base**
+
+1. `AVStream`的`time_base`的单位是秒。每种格式的`time_base`的值不一样，根据采样来计算，比如`mpeg`的`pts`、`dts`都是以`90kHz`来采样的，所以采样间隔就是`1/900000`秒。
+2. `AVCodecContext`的`time_base`单位同样为秒，不过精度没有`AVStream->time_base`高，大小为`1/framerate`。
+3. `AVPacket`下的`pts`和`dts`以`AVStream->time_base`为单位(数值比较大)，时间间隔就是`AVStream->time_base`。
+4. `AVFrame`里面的`pkt_pts`和`pkt_dts`是拷贝自AVPacket，同样以`AVStream->time_base`为单位；而`pts`是为输出(显示)准备的，以`AVCodecContex->time_base`为单位。
+5. 输入流`InputStream`下的`pts`和`dts`以`AV_TIME_BASE`为单位(微秒)，至于为什么要转化为微秒，可能是为了避免使用浮点数。
+6. 输出流`OutputStream`涉及音视频同步，结构和`InputStream`不同，暂时只作记录，不分析。
+
+**各个time_base之前的转换**
+
+**ffmpeg**提供`av_rescale_q`函数用于`time_base`之间转换，`av_rescale_q(a,b,c)`作用相当于执行`a*b/c`，通过设置`b,c`的值，可以很方便的实现`time_base`之间转换。
+
+ **其他**
+
+`AVFrame->pts`和`AVPacket->pts`、`AVPacket->dts`的值，在解码/编码后，会经历短暂的time_base不匹配的情况：
+
+1. 解码后，`decoded_frame->pts`的值使用`AVStream->time_base`为单位，后在`AVFilter`里面转换成以`AVCodecContext->time_base`为单位。
+2. 编码后，`pkt.pts`、`pkt.dts`使用`AVCodecContext->time_base`为单位，后通过调用`"av_packet_rescale_ts"`转换为`AVStream->time_base`为单位。
+
+*知识点1：av_q2d(AVRational a)函数
+    av_q2d(AVRational);该函数负责把AVRational结构转换成double，通过这个函数可以计算出某一帧在视频中的时间位置
+    timestamp(秒) = pts * av_q2d(st->time_base);
+    计算视频长度的方法：
+    time(秒) = st->duration * av_q2d(st->time_base);
+
+*知识点2：av_rescale_q(int64_t a, AVRational bq, AVRational cq)函数
+    这个函数的作用是计算a*bq / cq来把时间戳从一个时间基调整到另外一个时间基。在进行时间基转换的时候，应该首先这个函数，因为它可以避免溢出的情况发生
+
+*知识点3：ffmpeg内部的时间与标准的时间转换方法：
+    timestamp(ffmpeg内部的时间戳) = AV_TIME_BASE * time(秒)
+    time(秒) = AV_TIME_BASE_Q * timestamp(ffmpeg内部的时间戳)
+*知识点5：不同的时间基
+    现实中不同的封装格式，timebase是不一样的。另外，整个转码过程，不同的数据状态对应的时间基也不一致。还是拿mpegts封装格式25fps来
+    说（只说视频，音频大致一样，但也略有不同）。非压缩时候的数据（即YUV或者其它），在ffmpeg中对应的结构体为AVFrame,它的时间基为AVRational{1,25}。
+    压缩后的数据（对应的结构体为AVPacket）对应的时间基为AVRational{1,90000}
+
+
+
+# FFMpeg滤镜中英文对照
+
+http://ffmpeg.org/ffmpeg-filters.html
+
+http://www.mamicode.com/info-detail-1208970.html
+
+http://www.mamicode.com/info-detail-1208951.html
 
 ```
     FFMpeg ver 20160213-git-588e2e3 滤镜中英文对照 2016.02.17 by 1CM
@@ -587,3 +827,137 @@ https://blog.csdn.net/leixiaohua1020/article/details/44199673
      ... fifo              V->V       Buffer input images and send them when they are requested.
                                       缓冲输入帧,若需要时.
 ```
+
+
+
+# ffmpeg audio
+
+SwrContext常用函数
+1)swr_alloc
+
+函数原型：struct SwrContext *swr_alloc(void);
+此函数用于申请一个SwrContext结构体
+
+    1
+    2
+
+2)swr_init
+
+函数原型：int swr_init(struct SwrContext *s);
+当设置好相关的参数后，使用此函数来初始化SwrContext结构体
+
+    1
+    2
+
+3)swr_alloc_set_opts
+
+函数原型：struct SwrContext *swr_alloc_set_opts(struct SwrContext *s,
+                                      int64_t out_ch_layout, enum AVSampleFormat out_sample_fmt, int out_sample_rate,
+                                      int64_t  in_ch_layout, enum AVSampleFormat  in_sample_fmt, int  in_sample_rate,
+                                      int log_offset, void *log_ctx);
+
+    1
+    2
+    3
+    4
+
+此函数是比较重要的函数，分配SwrContext并设置/重置常用的参数。
+相关参数解释如下：
+
+ * @param s               Swr context, can be NULL
+ * @param out_ch_layout   output channel layout (AV_CH_LAYOUT_*)
+ * @param out_sample_fmt  output sample format (AV_SAMPLE_FMT_*).
+ * @param out_sample_rate output sample rate (frequency in Hz)
+ * @param in_ch_layout    input channel layout (AV_CH_LAYOUT_*)
+ * @param in_sample_fmt   input sample format (AV_SAMPLE_FMT_*).
+ * @param in_sample_rate  input sample rate (frequency in Hz)
+ * @param log_offset      logging level offset
+ * @param log_ctx         parent logging context, can be NULL
+
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+
+上面的参数即包含了输入输出参数中sample rate(采样率)、sample format(采样格式)、channel layout等参数。
+4)swr_convert
+
+函数原型：int swr_convert(struct SwrContext *s, uint8_t **out, int out_count,
+                                const uint8_t **in , int in_count);
+
+    1
+    2
+
+此函数便是将输入的音频按照定义的参数进行转换，并输出
+5)swr_free
+
+函数原型:void swr_free(struct SwrContext **s);
+释放掉SwrContext结构体并将此结构体置为NULL;
+
+    1
+    2
+
+三、基本用法
+
+此结构体比较简单，参考FFMPEG中头文件 swresample.h中说明，基本用法如下：
+申请结构体—>设置相关参数—>初始化—>转换—->释放结构体
+
+申请结构体和设置相关参数有两种方法：
+方法1：
+
+ SwrContext *swr = swr_alloc();
+ av_opt_set_channel_layout(swr, "in_channel_layout",  AV_CH_LAYOUT_5POINT1, 0);
+ av_opt_set_channel_layout(swr, "out_channel_layout", AV_CH_LAYOUT_STEREO,  0);
+ av_opt_set_int(swr, "in_sample_rate",     48000,                0);
+ av_opt_set_int(swr, "out_sample_rate",    44100,                0);
+ av_opt_set_sample_fmt(swr, "in_sample_fmt",  AV_SAMPLE_FMT_FLTP, 0);
+ av_opt_set_sample_fmt(swr, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
+
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+
+方法2：
+
+ SwrContext *swr = swr_alloc_set_opts(NULL,  // we're allocating a new context
+                        AV_CH_LAYOUT_STEREO,  // out_ch_layout
+                        AV_SAMPLE_FMT_S16,    // out_sample_fmt
+                        44100,                // out_sample_rate
+                        AV_CH_LAYOUT_5POINT1, // in_ch_layout
+                        AV_SAMPLE_FMT_FLTP,   // in_sample_fmt
+                        48000,                // in_sample_rate
+                        0,                    // log_offset
+                        NULL);                // log_ctx
+
+# ffmpeg video
+
+
+
+# ffmpeg 解码
+
+
+
+# ffmpeg 编码
+
+# ffmpeg mux
+
+
+
+# ffmpeg源代码解析
+
+
+
+
+
+# frei0r
+
+https://www.dyne.org/software/frei0r/
