@@ -14,6 +14,7 @@ SOURCES += \
     AudioRender.cpp \
     DXGICapture.cpp \
     EncodeAACTest.cpp \
+    EncodeAACTest1.cpp \
     GDICapture.cpp \
     RecoderCore.cpp \
     RenderWidget.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     AudioCapture/AudioResampler.h \
     AudioOutputPortAudio.h \
     EncodeAACTest.h \
+    EncodeAACTest1.h \
     encoder/FFmpegAudioEncoder.h \
     encoder/FFmpegMux.h \
     util/CircleBuffer.h \

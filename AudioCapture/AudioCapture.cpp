@@ -453,7 +453,7 @@ bool AudioCapture::processCaptureData()
     uint32_t dataFrames = 0;
     uint64_t  tsOffset = 0;
 
-    const uint8_t* inData  =buffer;
+    const uint8_t* inData  = buffer;
     resamper->resample(&data, &dataFrames ,&tsOffset,&inData,frames);
 
     if(onAudioData){

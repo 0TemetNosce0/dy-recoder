@@ -954,7 +954,12 @@ SwrContext常用函数
 
 # ffmpeg源代码解析
 
+AVStream AVCodecContext AVCodec
 
+- 每个AVStream存储一个视频/音频流的相关数据；
+- 每个AVStream对应一个AVCodecContext，存储该视频/音频流使用解码方式的相关数据；
+- 每个AVCodecContext中对应一个AVCodec，包含该视频/音频对应的解码器。
+- 每种解码器都对应一个AVCodec结构。
 
 
 

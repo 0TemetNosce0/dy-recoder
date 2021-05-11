@@ -2,6 +2,7 @@
 #include <AudioCapture/AudioCapture.h>
 #include <AudioCapture/WASAPIAudioDevices.h>
 #include <EncodeAACTest.h>
+#include <EncodeAACTest1.h>
 #include "AudioOutputPortAudio.h"
 
 //内置参数设置
@@ -53,6 +54,6 @@ private:
     //test
 
 
-    EncodeAACTest encoderTest;
+    EncodeAACTest1 encoderTest;
     AudioOutputPortAudio audioPlay;
 };
