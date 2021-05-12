@@ -203,3 +203,29 @@ ResetEvent(hEvent);
 ```
 
 注：上面的复位方式指的是恢复到无信号状态的方式，若设置为TRUE，则表示需要手动将其置为无信号，若为FALSE，则会自动变为无信号，千万别和信号量变为有信号状态的方式搞混了！
+
+
+
+
+
+1. **IAudioCaptureClient::GetNextPacketSize**
+
+> The GetNextPacketSize method retrieves **the number of frames in the next data packet in the capture endpoint buffer**.
+
+这里有两个注意的。
+(1) 单位为**audio frame**。
+(2) 注意是采集buffer(capture endpoint buffer)
+
+> Use this method only with shared-mode streams. It does not work with exclusive-mode streams.
+
+仅在共享模式下生效，独占模式下无效。
+
+> **Before calling the [\**IAudioCaptureClient::GetBuffer\**](https://link.jianshu.com?t=https%3A%2F%2Fmsdn.microsoft.com%2Fen-us%2Flibrary%2Fwindows%2Fdesktop%2Fdd370859(v%3Dvs.85).aspx) method to retrieve the next data packet, the client can call \**GetNextPacketSize\** to retrieve the number of audio frames in the next packet**.
+> The count reported by **GetNextPacketSize** matches the count retrieved in the **GetBuffer** call (through the *pNumFramesToRead* output parameter) that follows the **GetNextPacketSize** call.
+
+在调用**GetBuffer**之前，可调用**GetNextPacketSize**来获取下一个数据包的音频帧个数。
+
+> A packet always consists of an integral number of audio frames.
+> **GetNextPacketSize** must be called in the same thread as the [**GetBuffer**](https://link.jianshu.com?t=https%3A%2F%2Fmsdn.microsoft.com%2Fen-us%2Flibrary%2Fwindows%2Fdesktop%2Fdd370859(v%3Dvs.85).aspx) and [**IAudioCaptureClient::ReleaseBuffer**](https://link.jianshu.com?t=https%3A%2F%2Fmsdn.microsoft.com%2Fen-us%2Flibrary%2Fwindows%2Fdesktop%2Fdd370861(v%3Dvs.85).aspx) method calls that get and release the packets in the capture endpoint buffer.
+
+**GetNextPacketSize**必须和**GetBuffer**及**IAudioCaptureClient::ReleaseBuffer**在同一线程中调用。

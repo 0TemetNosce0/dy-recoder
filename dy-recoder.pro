@@ -18,6 +18,8 @@ SOURCES += \
     GDICapture.cpp \
     RecoderCore.cpp \
     RenderWidget.cpp \
+    ScreenCapture/DXGIScreenCapture.cpp \
+    ScreenCapture/WindowHelper.cpp \
     VideoRender.cpp \
     encoder/FFmpegAudioEncoder.cpp \
     encoder/FFmpegMux.cpp \
@@ -34,6 +36,8 @@ HEADERS += \
     AudioOutputPortAudio.h \
     EncodeAACTest.h \
     EncodeAACTest1.h \
+    ScreenCapture/DXGIScreenCapture.h \
+    ScreenCapture/WindowHelper.h \
     encoder/FFmpegAudioEncoder.h \
     encoder/FFmpegMux.h \
     util/CircleBuffer.h \
