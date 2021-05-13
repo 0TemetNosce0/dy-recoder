@@ -58,4 +58,6 @@ private:
     ComPtr<ID3D11VertexShader> m_pVertexShader; // 顶点着色器
     ComPtr<ID3D11PixelShader> m_pPixelShader;   // 像素着色器
 
+ ID3D11SamplerState* m_sampleState;
+    ID3D11ShaderResourceView * texture;
 };

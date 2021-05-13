@@ -22,6 +22,14 @@ IDXGISwapChain交换链封装2个以上的后背缓冲区用于渲染和显示�
     创建深度模板缓存视图(可选)
     设置视口
 D3DX11CompileFromFile已弃用 换成D3DCompileFromFile
+
+D3DX11SaveTextureToFile//DirectXTex库的接口
+
+```cpp
+HRESULT result = D3DX11SaveTextureToFile(
+    g_pImmediateContext, tex, D3DX11_IFF_PNG, "name.png");
+```
+
 # DirectX graphics and gaming
 
 https://docs.microsoft.com/en-us/windows/win32/directx
@@ -792,6 +800,14 @@ https://docs.microsoft.com/en-us/windows/win32/gdi/multiple-display-monitors-fun
 
 https://docs.microsoft.com/en-us/windows/win32/gdi/multiple-display-monitors-structures
 
+| [**EnumDisplayMonitors**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-enumdisplaymonitors) | Enumerates display monitors that intersect a region formed by the  intersection of a specified clipping rectangle and the visible region of a device context. |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [**GetMonitorInfo**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-getmonitorinfoa) | Retrieves information about a display monitor.               |
+| [**MonitorEnumProc**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nc-winuser-monitorenumproc) | An application-defined callback function that is called by the [**EnumDisplayMonitors**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-enumdisplaymonitors) function. |
+| [**MonitorFromPoint**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfrompoint) | Retrieves a handle to the display monitor that contains a specified point. |
+| [**MonitorFromRect**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfromrect) | Retrieves a handle to the display monitor that has the largest area of intersection with a specified rectangle. |
+| [**MonitorFromWindow**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfromwindow) | Retrieves a handle to the display monitor that has the largest area  of intersection with the bounding rectangle of a specified window. |
+
 # [HLSL编译着色器的三种方法](https://www.cnblogs.com/X-Jun/p/10066282.html)
 [Compiling Shaders](https://docs.microsoft.com/zh-cn/windows/desktop/direct3dhlsl/dx-graphics-hlsl-part1#compiling-with-d3dcompilefromfile)
 
@@ -872,10 +888,79 @@ HR(m_pd3dDevice->CreateInputLayout(VertexPosColor::inputLayout, ARRAYSIZE(Vertex
 
 
 
-| [**EnumDisplayMonitors**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-enumdisplaymonitors) | Enumerates display monitors that intersect a region formed by the  intersection of a specified clipping rectangle and the visible region of a device context. |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [**GetMonitorInfo**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-getmonitorinfoa) | Retrieves information about a display monitor.               |
-| [**MonitorEnumProc**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nc-winuser-monitorenumproc) | An application-defined callback function that is called by the [**EnumDisplayMonitors**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-enumdisplaymonitors) function. |
-| [**MonitorFromPoint**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfrompoint) | Retrieves a handle to the display monitor that contains a specified point. |
-| [**MonitorFromRect**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfromrect) | Retrieves a handle to the display monitor that has the largest area of intersection with a specified rectangle. |
-| [**MonitorFromWindow**](https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-monitorfromwindow) | Retrieves a handle to the display monitor that has the largest area  of intersection with the bounding rectangle of a specified window. |
+
+# [Windows10下开启D3D11的Debug Layer](https://www.cnblogs.com/kekec/p/14440410.html)
+
+https://www.cnblogs.com/X-Jun/archive/2018/09/13/9638817.html
+https://www.cnblogs.com/kekec/p/14440410.html
+
+
+
+
+
+D3D Runtime是分层构造的，从核心的基本功能开始，在外部层中构建可选的功能和开发人员辅助功能。各个层（layers）只会添加功能，但不会修改现有行为。
+
+可在调用D3D11CreateDevice或D3D11CreateDeviceAndSwapChain创建设备时并提供一个或多个D3D11_CREATE_DEVICE_FLAG值来创建层（layers）。
+
+**核心层（Core Layer）**
+
+核心层默认存在。在API和设备驱动程序之间提供映射，从而最大程度地减少了高频调用的开销。由于核心层对于性能至关重要，因此它仅执行关键验证。其余层是可选的。
+
+**调试层（Debug Layer）**
+
+调试层提供了广泛的附加参数和一致性验证（例如，验证着色器链接和资源绑定，验证参数一致性以及报告错误描述）。
+
+若要创建支持调试层的设备，必须安装DirectX  SDK（需要D3D11SDKLayers.dll），然后在调用D3D11CreateDevice函数或D3D11CreateDeviceAndSwapChain函数时指定D3D11_CREATE_DEVICE_DEBUG标志。
+
+如果在启用调试层的情况下运行应用程序，则该应用程序的运行速度将大大降低。但是，要确保在发布应用程序之前清除其错误和警告，请使用调试层。有关更多信息，请参阅Using the debug layer to debug apps
+
+在DirectX SDK附带的DirectX Control Panel来启用/禁用调试标志。
+
+当调试层列出内存泄漏时，它将输出对象接口指针及其友好名称的列表。 默认的友好名称是“ ”，开发者可使用ID3D11DeviceChild  :: SetPrivateData方法和D3Dcommon.h中的WKPDID_D3DDebugObjectName GUID来设置友好名称。
+
+```
+const char c_szName[] = "mytexture.jpg";
+pTexture-SetPrivateData( WKPDID_D3DDebugObjectName, sizeof( c_szName ) - 1, c_szName );
+```
+
+**Windows10下开启D3D11的Debug Layer**
+
+在windows 10上，带Debug Layer标志位来创建D3D11设备会失败。调试运行在Output窗口会输出如下信息：
+
+> D3D11CreateDevice: Flags (0x2) were specified which require the D3D11 SDK Layers for Windows 10, but they are not present on the system.
+> These flags must be removed, or the Windows 10 SDK must be installed.
+> Flags include: D3D11_CREATE_DEVICE_DEBUG
+> 。。。 。。。
+> C:\Program Files (x86)\Microsoft DirectX SDK (June  2010)\samples\c++\DXUT11\Core\DXUT.cpp(3557): D3D11CreateDevice  hr=Unknown (0x887a002d)
+
+解决方法：
+
+1.计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU下的UseWUServer设置成0，并重启计算机
+
+\2. 安装Graphics Tools（图形工具）
+
+# shader
+
+语法
+
+
+
+顶点
+
+
+
+绘制
+
+
+
+
+
+参数设置
+
+
+
+## 纹理
+
+ID3D11ShaderResourceView
+
+ID3D11SamplerState

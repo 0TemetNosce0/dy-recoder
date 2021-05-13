@@ -260,6 +260,21 @@ void RenderWidget::Init() {
     // 将着色器绑定到渲染管线
     m_d3dDevContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
     m_d3dDevContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
+
+    // 初始化采样器状态描述
+    D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = m_d3dDevice->CreateSamplerState(&sampDesc, &m_sampleState);
+    if (hr) {
+        qDebug() << "sssssssss";
+    }
 }
 
 void RenderWidget::render() {
@@ -267,6 +282,9 @@ void RenderWidget::render() {
     m_d3dDevContext->ClearRenderTargetView(m_renderTargetView, color);
     //    m_d3dDevContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+        m_d3dDevContext->PSSetShaderResources(0, 1, &texture);//设置texture
+    // Set the sampler state in the pixel shader.
+        m_d3dDevContext->PSSetSamplers(0, 1, &m_sampleState);
     // 绘制三角形
     m_d3dDevContext->Draw(3, 0);
     //交换.显示到屏幕
