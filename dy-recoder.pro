@@ -133,7 +133,7 @@ LIBS  += $$PWD/3rd/ffmpeg-4.0.2-win32/lib/avcodec.lib  \
 
 INCLUDEPATH += $$PWD/3rd/ffmpeg-4.0.2-win32/include
 
-LIBS += -lshell32 -luser32 -lD3d9 -lole32
+LIBS += -lshell32 -luser32 -lD3d9 -lole32 -lD3D11 -lD3DCompiler
 
 LIBS += $$PWD/3rd/portaudio/lib/portaudio_x86.lib
 

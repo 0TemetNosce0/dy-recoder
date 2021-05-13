@@ -1,5 +1,27 @@
 [TOC]
 
+Surfaces
+一个surface代表了显存中的一块线性区域，通常在显卡的显存中，尽管surface也可以存在系统内存中。surface是被IDirect3DSurface9接口管理的。
+
+ 1. front buffer：一块矩形内存，会被graphics　adapter翻译并在显示屏上显示。在Ｄ３Ｄ中，程序从来不会直接往front　buffer上写的。
+ 2. back buffer：一块矩形内存，程序可以直接写；它永远不会直接被显示到显示器上。
+ 3. flipping surface： 将back buffer移到front buffer的过程。
+ 4. swap chain： 一组，一个或多个，back buffer，可以被顺序地present到front buffer上。
+
+一个IDXGISwapChain接口实现一个或多个Surface来存储呈现输出前的渲染数据。
+IDXGISwapChain交换链封装2个以上的后背缓冲区用于渲染和显示。他们通常包含一个前置缓冲区用于显示和一个后背缓冲区用于渲染。实时上下文用于渲染后背缓冲区，交换链通过交换两个缓冲区来显示图像。
+
+
+初始化Direct3D-11分为以下几个步骤
+
+    描述交换链
+    创建D3D设备
+    创建设备上下文接口
+    创建交换链接口
+    创建目标渲染视图
+    创建深度模板缓存视图(可选)
+    设置视口
+D3DX11CompileFromFile已弃用 换成D3DCompileFromFile
 # DirectX graphics and gaming
 
 https://docs.microsoft.com/en-us/windows/win32/directx
@@ -11,6 +33,24 @@ https://docs.microsoft.com/en-us/windows/win32/directx
 - [XAudio2 APIs](https://docs.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-apis-portal)
 
   examples: https://github.com/microsoft/DirectX-Graphics-Samples
+
+
+
+# DirectXMath
+
+从Windows8开始，DirectX 11中xnamath.h就去掉了，替换成DirectXMath.h头文件。所以如果遇到一些在旧系统上开发的代码示例，如果提示找不到xnamath.h的话，可以先简单按照下面方法处理：
+
+
+#include <xnamath.h>
+
+变成：
+
+#include <DirectXMath.h>
+using namespace DirectX;
+
+或者不用using namespace， 在程序里添加前缀调用，例如：
+
+DirectX::XMFLOAT3 position;
 
 # direct3d
 
@@ -321,6 +361,53 @@ Flags
 UINT
 这个成员是一个 DXGI_SWAP_EFFECT枚举类型，描述交换链接行为设置。 
 ```
+
+DXGI_MODE_DESC结构体，其成分如下
+
+    typedef struct DXGI_MODE_DESC
+    {
+        UINT Width;
+        UINT Height;
+        DXGI_RATIONAL RefreshRate;
+        DXGI_FORMAT Format;
+        DXGI_MODE_SCANLINE_ORDER ScanlineOrdering;
+        DXGI_MODE_SCALING Scaling;
+    } DXGI_MODE_DESC;
+    
+    UINT Width:描述窗口分辨率宽度。
+    UINT Height:描述窗口分辨率高度。
+    DXGI_RATIONAL RefreshRate:用于描述刷新频率的结构体。
+    DXGI_FORMAT Format:用于描述显示格式的枚举类型。设置为DXGI_FORMAT_R8G8B8A8_UNORM即可
+    DXGI_MODE_SCANLINE_ORDER ScanlineOrdering:用于描述扫描线绘制模式的枚举。可以设置为0
+    DXGI_ODE_SCALING Scaling:用于描述缩放形式的枚举类型，默认使用DXGI_MODE_SCALING_UNSPECIFIED。
+
+DXGI_RATIONAL结构体。成分如下
+
+    typedef struct DXGI_RATIONAL
+    {
+        UINT Numerator;
+        UINT Denominator;
+    } DXGI_RATIONAL;
+    
+    UINT 类型的Numerator:表示刷新频率的分子
+    UINT 类型的Denominator:表示刷新频率的分母
+    Numerator=60,Denominator=1表示每秒刷新6次
+
+
+DXGI_SAMPLE_DESC。
+
+
+
+    typedef struct DXGI_SAMPLE_DESC
+    {
+        UINT Count;
+        UINT Quality;
+    } DXGI_SAMPLE_DESC;
+    
+    UINT类型的Count:描述每一个像素多重采样的次数。
+    UINT类型的Quality:描述图像品质等级。有效范围是0~1，小于CheckMultisampleQualityLevels的返回值。
+    默认值为Count=1,Quality=0;
+
 
 ID3D11Device接口
 
@@ -704,6 +791,84 @@ https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Deskto
 https://docs.microsoft.com/en-us/windows/win32/gdi/multiple-display-monitors-functions
 
 https://docs.microsoft.com/en-us/windows/win32/gdi/multiple-display-monitors-structures
+
+# [HLSL编译着色器的三种方法](https://www.cnblogs.com/X-Jun/p/10066282.html)
+[Compiling Shaders](https://docs.microsoft.com/zh-cn/windows/desktop/direct3dhlsl/dx-graphics-hlsl-part1#compiling-with-d3dcompilefromfile)
+
+[How To: Compile a Shader](https://docs.microsoft.com/zh-cn/windows/desktop/direct3d11/how-to--compile-a-shader)
+
+
+
+CreateShaderFromFile
+
+```
+// 安全COM组件释放宏
+#define SAFE_RELEASE(p) { if ((p)) { (p)->Release(); (p) = nullptr; } }
+
+// ------------------------------
+// CreateShaderFromFile函数
+// ------------------------------
+// [In]csoFileNameInOut 编译好的着色器二进制文件(.cso)，若有指定则优先寻找该文件并读取
+// [In]hlslFileName     着色器代码，若未找到着色器二进制文件则编译着色器代码
+// [In]entryPoint       入口点(指定开始的函数)
+// [In]shaderModel      着色器模型，格式为"*s_5_0"，*可以为c,d,g,h,p,v之一
+// [Out]ppBlobOut       输出着色器二进制信息
+HRESULT CreateShaderFromFile(const WCHAR * csoFileNameInOut, const WCHAR * hlslFileName,
+    LPCSTR entryPoint, LPCSTR shaderModel, ID3DBlob ** ppBlobOut)
+{
+    HRESULT hr = S_OK;
+
+    // 寻找是否有已经编译好的顶点着色器
+    if (csoFileNameInOut && D3DReadFileToBlob(csoFileNameInOut, ppBlobOut) == S_OK)
+    {
+        return hr;
+    }
+    else
+    {
+        DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+        // 设置 D3DCOMPILE_DEBUG 标志用于获取着色器调试信息。该标志可以提升调试体验，
+        // 但仍然允许着色器进行优化操作
+        dwShaderFlags |= D3DCOMPILE_DEBUG;
+
+        // 在Debug环境下禁用优化以避免出现一些不合理的情况
+        dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+        ID3DBlob* errorBlob = nullptr;
+        hr = D3DCompileFromFile(hlslFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint, shaderModel,
+            dwShaderFlags, 0, ppBlobOut, &errorBlob);
+        if (FAILED(hr))
+        {
+            if (errorBlob != nullptr)
+            {
+                OutputDebugStringA(reinterpret_cast<const char*>(errorBlob->GetBufferPointer()));
+            }
+            SAFE_RELEASE(errorBlob);
+            return hr;
+        }
+
+        // 若指定了输出文件名，则将着色器二进制信息输出
+        if (csoFileNameInOut)
+        {
+            return D3DWriteBlobToFile(*ppBlobOut, csoFileNameInOut, FALSE);
+        }
+    }
+
+    return hr;
+}
+
+
+使用方式如下：
+ComPtr<ID3DBlob> blob;
+
+// 创建顶点着色器
+HR(CreateShaderFromFile(L"HLSL\\Triangle_VS.cso", L"HLSL\\Triangle_VS.hlsl", "VS", "vs_5_0", blob.ReleaseAndGetAddressOf()));
+HR(m_pd3dDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_pVertexShader.GetAddressOf()));
+// 创建并绑定顶点布局
+HR(m_pd3dDevice->CreateInputLayout(VertexPosColor::inputLayout, ARRAYSIZE(VertexPosColor::inputLayout),
+    blob->GetBufferPointer(), blob->GetBufferSize(), m_pVertexLayout.GetAddressOf()));
+
+```
 
 
 
