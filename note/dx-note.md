@@ -964,3 +964,12 @@ pTexture-SetPrivateData( WKPDID_D3DDebugObjectName, sizeof( c_szName ) - 1, c_sz
 ID3D11ShaderResourceView
 
 ID3D11SamplerState
+
+
+
+
+
+```
+ D3D11_VIEWPORT view_port[4];
+g_pImmediateContext->RSSetViewports(4, view_port);设置4个视口
+```
